@@ -17,3 +17,5 @@ export function app(): express.Express {
   server.set('views', browserDistFolder);
 
   // Example Express Rest API endpoints
+  return server;
+}

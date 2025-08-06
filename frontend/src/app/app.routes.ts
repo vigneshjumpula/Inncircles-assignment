@@ -9,13 +9,14 @@ import { ReviewComponent } from './components/review/review.component';
 export const routes: Routes = [
     {
         path: '',
-        component: MainComponent,
+        redirectTo: '/main',
+        pathMatch: 'full'
     },
     {
         path: 'main',
         component: MainComponent,
         children: [
-            {path: 'helpers/:id',component:RightComponent}
+            {path: 'helpers/:id', component: RightComponent}
         ]
     },
     {

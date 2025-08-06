@@ -18,6 +18,18 @@ export class HelperDetailsService {
     console.log('Fetching helpers from cache:', this.helpers);
     return this.helpers;
   }
+  // Load  helpers list from backend
+  loadHelpers(): Observable<any[]> {
+    return this.http.get<any[]>('http://localhost:3000/api/helpers')
+      .pipe(
+        tap(data => this.helpers = data),
+        catchError(error => throwError(() => error))
+      );
+  }
+  // Get single helper by id
+  getHelperById(id: string): any {
+    return this.helpers.find(h => h._id === id || h.id === id);
+  }
   // Store basic helper details from form
   setHelperDetails(details: any): void {
     this.perDetails = details;
@@ -42,5 +54,4 @@ export class HelperDetailsService {
         catchError(error => throwError(() => error))
       );
   }
-
 }

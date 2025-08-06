@@ -1,0 +1,11 @@
+import express, { Request, Response } from 'express';
+
+// Basic Express server for API health check
+export function app(): express.Express {
+  const server = express();
+  server.get('/api/health', (req: Request, res: Response) => {
+    res.status(200).send('API is running');
+  });
+  return server;
+}
+  const browserDistFolder = resolve(serverDistFolder, '../browser');

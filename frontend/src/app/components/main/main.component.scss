@@ -2,17 +2,30 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  
+  .main-content {
     flex: 1;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      flex: 1;
-      box-sizing: border-box;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      flex: 1;
-      box-sizing: border-box;
-    }
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    overflow: hidden;
     
     .left-container {
+      flex: 0 0 300px; // Fixed width for left sidebar
       height: 100%;
-      margin: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+    
+    .right-container {
+      flex: 1; // Takes remaining space
+      height: 100%;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+  }
+}

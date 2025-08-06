@@ -4,7 +4,7 @@
       *ngFor="let helper of helpers; let i = index" 
       class="helper-card"
       tabindex="0"
-      [class.active]="selectedHelper?.id === helper.id"
+      [class.active]="selectedHelper?._id === helper._id"
       (click)="onHelperClick(helper)"
     >
       <div class="helper-avatar">

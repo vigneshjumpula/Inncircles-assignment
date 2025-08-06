@@ -15,7 +15,7 @@ export class DocumentComponent {
   constructor(private router: Router, private helperDetailsService: HelperDetailsService) {}
 
   submitDocument() {
-    this.helperDetailsService.setDocument(this.docment);
+    this.helperDetailsService.Document = this.docment;
     this.router.navigate(['/add-helper/helper/review']);
   }
   goToForm() {

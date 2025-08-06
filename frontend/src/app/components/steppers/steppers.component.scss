@@ -1,83 +1,24 @@
+/* Simple stepper styling */
+.stepper-container {
+  padding: 20px;
+  height: 100%;
+}
+
+/* Remove internal layout since parent handles positioning */
+.stepper-layout {
+  height: 100%;
+}
+
+/* Clean stepper appearance */
 mat-stepper {
   background: transparent;
   box-shadow: none;
-  padding: 24px 20px;
-  
-  // Style the step headers
-  .mat-step-header {
-    padding: 16px 8px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    transition: all 0.2s ease;
-    
-    &:hover {
-      background: #f8fafc;
-    }
-    
-    &.cdk-keyboard-focused,
-    &.cdk-program-focused {
-      background: #f1f5f9;
-    }
-  }
-  
-  // Style the step icons
-  .mat-step-icon {
-    background: #e2e8f0;
-    color: #64748b;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    
-    &.mat-step-icon-selected {
-      background: #3b82f6;
-      color: white;
-    }
-    
-    &.mat-step-icon-state-done {
-      background: #10b981;
-      color: white;
-    }
-  }
-  
-  // Style the step labels
-  .mat-step-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: #374151;
-    
-    &.mat-step-label-active {
-      color: #1e293b;
-      font-weight: 600;
-    }
-  }
-  
-  // Style the step content area
-  .mat-step-content {
-    padding: 0;
-    margin-left: 36px;
-    margin-top: 8px;
-    border-left: 2px solid #f1f5f9;
-    padding-left: 16px;
-    min-height: 40px;
-  }
-  
-  // Hide default connector lines
-  .mat-stepper-vertical-line {
-    display: none;
-  }
 }
 
-@media (max-width: 768px) {
-  mat-stepper {
-    padding: 16px;
-    
-    .mat-step-header {
-      padding: 12px 8px;
-    }
-    
-    .mat-step-content {
-      margin-left: 32px;
-      padding-left: 12px;
-    }
-  }
-}
+// .mat-stepper-vertical {
+//   margin-top: 8px;
+// }
+
+// .mat-mdc-form-field {
+//   margin-top: 16px;
+// }

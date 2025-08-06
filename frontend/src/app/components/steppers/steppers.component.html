@@ -1,12 +1,19 @@
-<mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
-  <mat-step [stepControl]="firstFormGroup">
-    <ng-template matStepLabel>Helper Details</ng-template>
-  </mat-step>
-  <mat-step [stepControl]="secondFormGroup">
-    <ng-template matStepLabel>Document Upload</ng-template>
-  </mat-step>
-  <mat-step>
-    <ng-template matStepLabel>Review & Submit</ng-template>
-  </mat-step>
-</mat-stepper>
+<div class="stepper-container">
+  <div class="stepper-layout">
+    <div class="stepper-nav">
+      <h3>Helper Registration</h3>
+      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="firstFormGroup">
+          <ng-template matStepLabel>Helper Details</ng-template>
+        </mat-step>
+        <mat-step [stepControl]="secondFormGroup">
+          <ng-template matStepLabel>Document Upload</ng-template>
+        </mat-step>
+        <mat-step>
+          <ng-template matStepLabel>Review & Submit</ng-template>
+        </mat-step>
+      </mat-stepper>
+    </div>
+  </div>
+</div>
 

@@ -153,3 +153,12 @@
     margin: 0;
   }
 }
+
+.right-component {
+  flex: 1; /* Takes remaining 2/3 of the width */
+  height: 100%;
+  padding: 24px;
+  background: #ffffff;
+  box-sizing: border-box;
+  overflow-y: auto; /* Add scrollbar if content overflows */
+}
