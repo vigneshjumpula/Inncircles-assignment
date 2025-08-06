@@ -1,0 +1,42 @@
+<div class="header-container">
+  <h1>Header</h1>
+  <div class="header-row">
+    <div class="header-left">
+      <button class="icon-button" (click)="toggleSidebar()">
+        <img src="assets/arrow.png" alt="sort icon" />
+      </button>
+      
+      <!-- Sort Dropdown -->
+      <div class="sort-dropdown-container" *ngIf="visibleSort">
+        <mat-form-field class="sort-form-field">
+          <mat-label>Sort Options</mat-label>
+          <mat-select [(value)]="selectedSort" (selectionChange)="onSortChange($event.value)">
+            @for (option of sortOptions; track option.value) {
+              <mat-option [value]="option.value">{{option.viewValue}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      
+      <button class="action-button">
+        <img src="assets/filter.png" alt="filter icon" />
+      </button>
+      <div class="search-bar">
+        <img src="assets/magnifying-glass.png" alt="search icon" class="search-bar-icon">
+        <input 
+          type="text" 
+          placeholder="Name, Employee ID, Phone" 
+          class="search-bar-input"
+        />
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="action-button">
+        <img src="assets/download.png" alt="download icon" />
+      </button>
+      <button class="add-button" (click)="addHelper()">
+        + Add Helper
+      </button>
+    </div>
+  </div>
+</div>

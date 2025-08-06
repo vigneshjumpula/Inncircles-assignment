@@ -1,0 +1,137 @@
+.header-container {
+  width: 100%;
+  background: #fff;
+  padding: 24px 32px 16px 32px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #222;
+  }
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-button,
+.action-button {
+  background: #f5f5f5;
+  border: none;
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background: #e0e0e0;
+  }
+
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.sort-dropdown {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  margin-left: 8px;
+  min-width: 120px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  .sort-dropdown-header {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #666;
+    padding: 4px 16px 8px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 4px;
+  }
+
+  .sort-option {
+    padding: 6px 16px;
+    cursor: pointer;
+    color: #333;
+    border-radius: 4px;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin-left: 12px;
+  gap: 8px;
+
+  .search-bar-icon {
+    width: 18px;
+    height: 18px;
+    opacity: 0.7;
+  }
+
+  .search-bar-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 1rem;
+    padding: 4px 0;
+    width: 180px;
+
+    &::placeholder {
+      color: #aaa;
+      font-size: 0.98rem;
+    }
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.add-button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #1565c0;
+  }
+}

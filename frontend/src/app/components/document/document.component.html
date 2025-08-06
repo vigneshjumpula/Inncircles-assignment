@@ -1,0 +1,19 @@
+<div>
+   <!-- document -->
+    <div>
+        <h1>Additional Documents</h1>
+        <p>Upload Related Documents. This step is optional.</p>
+        <div class="file-upload-container">
+            <div class="upload-circle">
+                <input type="file" (change)="onFileSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                <span class="circle-text">Attach Documents</span>
+            </div>
+            <small class="file-info">Supported formats: PDF, JPG, JPEG, PNG (Max 5MB)</small>
+        </div>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" (click)="goToForm()">Previous</button>
+      <button class="nav-btn" (click)="submitDocument()">Next</button>
+    </div>
+</div>

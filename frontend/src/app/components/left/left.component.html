@@ -1,0 +1,37 @@
+<div class="sidebar-container">
+  <div class="helpers-list">
+    <div 
+      *ngFor="let helper of helpers; let i = index" 
+      class="helper-card"
+      tabindex="0"
+      [class.active]="selectedHelper?.id === helper.id"
+      (click)="onHelperClick(helper)"
+    >
+      <div class="helper-avatar">
+        <!-- Display avatar image if available in upload_photo or photo -->
+        <img
+          *ngIf="helper.upload_photo || helper.photo"
+          [src]="helper.upload_photo || helper.photo"
+          [alt]="helper.full_name"
+          class="avatar-image"
+        />
+        <!-- Fallback to initials if no image available -->
+        <div
+          *ngIf="!helper.upload_photo && !helper.photo"
+          class="avatar-placeholder"
+          [style.background-color]="getAvatarColor(i)"
+        >
+          {{ getInitials(helper.full_name) }}
+        </div>
+      </div>
+      <div class="helper-info">
+        <h3 class="helper-name">{{ helper.full_name }}</h3>
+        <p class="helper-role">{{ helper.type_of_service }}</p>
+        <p class="helper-duration">{{ getJoinedDuration(helper.joined_date) }}</p>
+      </div>
+      <div class="helper-extra">
+        <p class="helper-stat">{{ helper.households || 0 }} Households</p>
+      </div>
+    </div>
+  </div>
+</div>

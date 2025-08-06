@@ -1,0 +1,97 @@
+<div class="details-container" *ngIf="helper; else noSelection">
+  <div class="details-header">
+    <div class="helper-profile">
+      <div class="profile-avatar">
+        <img 
+          *ngIf="helper.upload_photo || helper.photo" 
+          [src]="helper.upload_photo || helper.photo" 
+          [alt]="helper.full_name" />
+        <div 
+          *ngIf="!helper.upload_photo && !helper.photo" 
+          class="avatar-placeholder-large"
+          [style.backgroundColor]="getAvatarColor(helper.full_name)">
+          {{ getInitials(helper.full_name) }}
+        </div>
+      </div>
+      <div class="profile-info">
+        <h2 class="helper-name">{{ helper.full_name }}</h2>
+        <p class="helper-role">{{ helper.type_of_service }}</p>
+      </div>
+    </div>
+    <div class="action-buttons">
+      <button class="edit-btn">
+        <img src="assets/pen.png" alt="edit" />
+      </button>
+      <button class="delete-btn">
+        <img src="assets/delete.png" alt="delete" />
+      </button>
+    </div>
+  </div>
+
+  <div class="details-content">
+    <!-- Employee ID -->
+    <h1 class="main-section-heading">EMPLOYEE ID</h1>
+    <div class="details-col">
+      <div class="detail-item">
+        <span class="detail-label">EMPLOYEE ID :</span>
+        <span class="detail-value">{{ helper.employee_code || '-' }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">IDENTIFICATION CARD :</span>
+        <span class="detail-value view-link">🔗 View</span>
+      </div>
+    </div>
+
+    <!-- Personal Details -->
+    <h1 class="main-section-heading">PERSONAL DETAILS</h1>
+    <div class="details-col">
+      <div class="detail-item">
+        <span class="detail-label">Gender :</span>
+        <span class="detail-value">{{ helper.gender }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Language(s) :</span>
+        <span class="detail-value">{{ helper.languages?.join(', ') }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Mobile No :</span>
+        <span class="detail-value">{{ helper.phone_number }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Email ID :</span>
+        <span class="detail-value">{{ helper.email }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">KYC DOCUMENT :</span>
+        <span class="detail-value view-link">🔗 View</span>
+      </div>
+    </div>
+
+    <!-- Service Details -->
+    <h1 class="main-section-heading">SERVICE DETAILS</h1>
+    <div class="details-col">
+      <div class="detail-item">
+        <span class="detail-label">Type :</span>
+        <span class="detail-value">{{ helper.type_of_service }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Organization :</span>
+        <span class="detail-value">{{ helper.organization_name }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Joined On :</span>
+        <span class="detail-value">{{ formatDate(helper.joined_date) }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Vehicle :</span>
+        <span class="detail-value">{{ helper.choose_vehicle }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #noSelection>
+  <div class="no-selection">
+    <p>Select a helper to view details</p>
+  </div>
+</ng-template>

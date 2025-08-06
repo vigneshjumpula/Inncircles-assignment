@@ -1,0 +1,17 @@
+<div class="add-helper-container">
+  <div class="add-helper-header">
+    <button (click)="backToHelper()" class="back-button">
+      <img src="assets/left.png" alt="Back" class="back-icon" />
+    </button>
+    <h1 class="page-title">Add Helper</h1>
+  </div>
+  
+  <div class="main-content">
+    <div class="stepper-sidebar">
+      <app-steppers></app-steppers>
+    </div>
+    <div class="form-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

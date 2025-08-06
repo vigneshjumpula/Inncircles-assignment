@@ -1,0 +1,152 @@
+<div class="form-container">
+    <div class="form-header">
+        <h1>Helper Details</h1>
+        <p>Track, add and manage all the helpers at one place</p>
+    </div>
+    
+    <form [formGroup]="userForm" (ngSubmit)="submitForm()">
+        <!-- Upload Photo -->
+        <div class="form-group">
+            <label for="photo">Upload Photo: <span class="required">*</span></label>
+        <div class="file-upload-container">
+            <div class="upload-circle">
+                <input type="file" id="photo" formControlName="upload_photo" accept=".jpg,.jpeg,.png" />
+                <mat-icon class="upload-icon">photo_camera</mat-icon>
+                <span class="circle-text">Upload Photo</span>
+            </div>
+            <small class="file-info">Supported formats: JPG, JPEG, PNG (Max 5MB)</small>
+        </div>
+            <div *ngIf="hasError('upload_photo')" class="error-message">
+                {{ getErrorMessage('upload_photo') }}
+            </div>
+        </div>
+
+        <!-- Type of Service -->
+        <div class="form-group">
+            <label for="service">Type of Service: <span class="required">*</span></label>
+            <select formControlName="type_of_service" id="service">
+                <option value="">Select a service</option>
+                <option value="cleaning">Cleaning</option>
+                <option value="cooking">Cooking</option>
+                <option value="babysitting">Babysitting</option>
+            </select>
+            <div *ngIf="hasError('type_of_service')" class="error-message">
+                {{ getErrorMessage('type_of_service') }}
+            </div>
+        </div>
+
+        <!-- Organization Name -->
+        <div class="form-group">
+            <label for="organization_name">Organization Name: <span class="required">*</span></label>
+            <select formControlName="organization_name" id="organization_name">
+                <option value="">Select an organization</option>
+                <option value="organization1">Organization 1</option>
+                <option value="organization2">Organization 2</option>
+                <option value="organization3">Organization 3</option> 
+            </select>
+            <div *ngIf="hasError('organization_name')" class="error-message">
+                {{ getErrorMessage('organization_name') }}
+            </div>
+        </div>
+
+        <!-- Full Name -->
+        <div class="form-group">
+            <label for="full_name">Full Name: <span class="required">*</span></label>
+            <input type="text" id="full_name" formControlName="full_name" placeholder="Enter your full name" />
+            <div *ngIf="hasError('full_name')" class="error-message">
+                {{ getErrorMessage('full_name') }}
+            </div>
+        </div>
+
+        <!-- Languages -->
+        <div class="form-group">
+            <label>Languages: <span class="required">*</span></label>
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" formControlName="languages" value="english" /> English
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" formControlName="languages" value="telugu" /> Telugu
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" formControlName="languages" value="hindi" /> Hindi
+                </label>
+            </div>
+            <div *ngIf="hasError('languages')" class="error-message">
+                {{ getErrorMessage('languages') }}
+            </div>
+        </div>
+
+        <!-- Gender -->
+        <div class="form-group">
+            <label for="gender">Gender: <span class="required">*</span></label>
+            <select formControlName="gender" id="gender">
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+            <div *ngIf="hasError('gender')" class="error-message">
+                {{ getErrorMessage('gender') }}
+            </div>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="form-group">
+            <label for="phone_number">Phone Number: <span class="required">*</span></label>
+            <div class="phone-input-container">
+                <span class="country-code">+91</span>
+                <input type="tel" id="phone_number" formControlName="phone_number" placeholder="Enter 10-digit phone number" maxlength="10" />
+            </div>
+            <div *ngIf="hasError('phone_number')" class="error-message">
+                {{ getErrorMessage('phone_number') }}
+            </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+            <label for="email">Email: <span class="required">*</span></label>
+            <input type="email" id="email" formControlName="email" placeholder="Enter your email address" />
+            <div *ngIf="hasError('email')" class="error-message">
+                {{ getErrorMessage('email') }}
+            </div>
+        </div>
+
+        <!-- Vehicle -->
+        <div class="form-group">
+            <label for="vehicle">Choose Vehicle: <span class="required">*</span></label>
+            <select formControlName="choose_vehicle" id="vehicle">
+                <option value="">Select a vehicle</option>
+                <option value="car">Car</option>
+                <option value="bike">Bike</option>
+                <option value="bus">Bus</option>
+            </select>
+            <div *ngIf="hasError('choose_vehicle')" class="error-message">
+                {{ getErrorMessage('choose_vehicle') }}
+            </div>
+        </div>
+
+        <!-- Document Upload -->
+        <div class="form-group">
+            <label for="kyc">Upload Document: <span class="required">*</span></label>
+            <div class="file-upload-container">
+                <div class="upload-circle">
+                    <input type="file" id="kyc" formControlName="kyc" accept=".pdf,.jpg,.jpeg,.png" />
+                <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                <span class="circle-text">Upload Document</span>
+                </div>
+                <small class="file-info">Supported formats: PDF, JPG, JPEG, PNG (Max 5MB)</small>
+            </div>
+            <div *ngIf="hasError('kyc')" class="error-message">
+                {{ getErrorMessage('kyc') }}
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="nav-buttons">
+            <button type="submit" class="nav-btn" [disabled]="userForm.invalid && formSubmitted">
+                Next: Upload Documents
+            </button>
+        </div>
+    </form>
+</div>
