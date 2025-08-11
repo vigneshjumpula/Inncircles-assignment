@@ -5,19 +5,14 @@
     </div>
     
     <form [formGroup]="userForm" (ngSubmit)="submitForm()">
-        <!-- Upload Photo -->
+        
         <div class="form-group">
-            <label for="photo">Upload Photo: <span class="required">*</span></label>
-        <div class="file-upload-container">
-            <div class="upload-circle">
-                <input type="file" id="photo" formControlName="upload_photo" accept=".jpg,.jpeg,.png" />
-                <mat-icon class="upload-icon">photo_camera</mat-icon>
-                <span class="circle-text">Upload Photo</span>
-            </div>
-            <small class="file-info">Supported formats: JPG, JPEG, PNG (Max 5MB)</small>
-        </div>
-            <div *ngIf="hasError('upload_photo')" class="error-message">
-                {{ getErrorMessage('upload_photo') }}
+            <label>Profile Avatar:</label>
+            <div class="avatar-container">
+                <div class="avatar-circle" [style.backgroundColor]="getAvatarColor()">
+                    <span class="avatar-text">{{ getAvatarLetter() }}</span>
+                </div>
+                <small class="avatar-info">Avatar shows the first letter of your name</small>
             </div>
         </div>
 
@@ -61,16 +56,27 @@
         <!-- Languages -->
         <div class="form-group">
             <label>Languages: <span class="required">*</span></label>
-            <div class="checkbox-group">
-                <label class="checkbox-label">
-                    <input type="checkbox" formControlName="languages" value="english" /> English
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" formControlName="languages" value="telugu" /> Telugu
-                </label>
-                <label class="checkbox-label">
-                    <input type="checkbox" formControlName="languages" value="hindi" /> Hindi
-                </label>
+            <div class="languages-container">
+                <div class="languages-dropdown">
+                    <div class="dropdown-toggle" (click)="toggleLanguagesDropdown()">
+                        <span>{{ getSelectedLanguagesText() }}</span>
+                        <mat-icon class="dropdown-arrow" [class.open]="isLanguagesDropdownOpen">keyboard_arrow_down</mat-icon>
+                    </div>
+                    <div class="dropdown-menu" *ngIf="isLanguagesDropdownOpen">
+                        <div class="language-option" (click)="toggleLanguage('english')">
+                            <input type="checkbox" [checked]="isLanguageSelected('english')" readonly>
+                            <label>English</label>
+                        </div>
+                        <div class="language-option" (click)="toggleLanguage('telugu')">
+                            <input type="checkbox" [checked]="isLanguageSelected('telugu')" readonly>
+                            <label>Telugu</label>
+                        </div>
+                        <div class="language-option" (click)="toggleLanguage('hindi')">
+                            <input type="checkbox" [checked]="isLanguageSelected('hindi')" readonly>
+                            <label>Hindi</label>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div *ngIf="hasError('languages')" class="error-message">
                 {{ getErrorMessage('languages') }}
@@ -128,23 +134,29 @@
 
         <!-- Document Upload -->
         <div class="form-group">
-            <label for="kyc">Upload Document: <span class="required">*</span></label>
+            <label for="kyc">Upload Document:</label>
             <div class="file-upload-container">
-                <div class="upload-circle">
-                    <input type="file" id="kyc" formControlName="kyc" accept=".pdf,.jpg,.jpeg,.png" />
-                <mat-icon class="upload-icon">cloud_upload</mat-icon>
-                <span class="circle-text">Upload Document</span>
+                <div class="upload-circle" *ngIf="!selectedKycFile">
+                    <input type="file" id="kyc" (change)="onKycSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
+                    <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                    <span class="circle-text">Upload Document</span>
                 </div>
-                <small class="file-info">Supported formats: PDF, JPG, JPEG, PNG (Max 5MB)</small>
-            </div>
-            <div *ngIf="hasError('kyc')" class="error-message">
-                {{ getErrorMessage('kyc') }}
+                <div class="file-selected" *ngIf="selectedKycFile">
+                    <div class="file-info">
+                        <mat-icon>description</mat-icon>
+                        <span>{{ getKycFileName() }}</span>
+                        <button type="button" class="remove-btn" (click)="removeKyc()">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <small class="file-info">Supported formats: PDF, JPG, JPEG, PNG (Max 1MB)</small>
             </div>
         </div>
 
         <!-- Navigation Buttons -->
         <div class="nav-buttons">
-            <button type="submit" class="nav-btn" [disabled]="userForm.invalid && formSubmitted">
+            <button type="submit" class="next-button" [disabled]="userForm.invalid && formSubmitted">
                 Next: Upload Documents
             </button>
         </div>

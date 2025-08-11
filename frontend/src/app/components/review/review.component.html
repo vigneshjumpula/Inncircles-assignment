@@ -1,9 +1,103 @@
-<p>review works!</p>
-<p>Form Details: {{ formDetails.full_name }}</p>
-<p>Document Details: {{ documentDetails.name }}</p>
+<div class="review-container" *ngIf="formDetails; else noData">
+  <div class="review-header">
+    <h1>Review Helper Details</h1>
+    <p>Please review all the information before submitting</p>
+  </div>
 
+  <div class="details-container">
+    <div class="details-header">
+      <div class="helper-profile">
+        <div class="profile-avatar">
+          <div 
+            class="avatar-placeholder-large"
+            [style.backgroundColor]="getAvatarColor(formDetails.full_name)">
+            {{ getInitials(formDetails.full_name) }}
+          </div>
+        </div>
+        <div class="profile-info">
+          <h2 class="helper-name">{{ formDetails.full_name }}</h2>
+          <p class="helper-role">{{ formDetails.type_of_service }}</p>
+        </div>
+      </div>
+    </div>
 
-<div class="nav-buttons">
-  <button class="nav-btn" (click)="goToDocument()">Previous</button>
-  <button class="nav-btn" (click)="submitReview()">Submit</button>
+    <div class="details-content">
+      <!-- Personal Details -->
+      <h1 class="main-section-heading">PERSONAL DETAILS</h1>
+      <div class="details-col">
+        <div class="detail-item">
+          <span class="detail-label">Full Name :</span>
+          <span class="detail-value">{{ formDetails.full_name || '-' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Gender :</span>
+          <span class="detail-value">{{ formDetails.gender || '-' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Language(s) :</span>
+          <span class="detail-value">{{ getLanguagesDisplay() }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Mobile No :</span>
+          <span class="detail-value">+91 {{ formDetails.phone_number || '-' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Email ID :</span>
+          <span class="detail-value">{{ formDetails.email || '-' }}</span>
+        </div>
+      </div>
+
+      <!-- Service Details -->
+      <h1 class="main-section-heading">SERVICE DETAILS</h1>
+      <div class="details-col">
+        <div class="detail-item">
+          <span class="detail-label">Type :</span>
+          <span class="detail-value">{{ formDetails.type_of_service || '-' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Organization :</span>
+          <span class="detail-value">{{ formDetails.organization_name || '-' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Vehicle :</span>
+          <span class="detail-value">{{ formDetails.choose_vehicle || '-' }}</span>
+        </div>
+      </div>
+
+      <!-- Document Details -->
+      <h1 class="main-section-heading">DOCUMENTS</h1>
+      <div class="details-col">
+        <div class="detail-item">
+          <span class="detail-label">KYC Document :</span>
+          <span class="detail-value">{{ formDetails.kyc ? '✓ Uploaded' : '✗ Not uploaded' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Additional Document :</span>
+          <span class="detail-value">{{ documentDetails ? '✓ Uploaded' : '✗ Not uploaded' }}</span>
+        </div>
+        <div class="detail-item" *ngIf="documentDetails">
+          <span class="detail-label">Document Name :</span>
+          <span class="detail-value">{{ documentDetails.name || 'Unnamed Document' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="nav-btn secondary" (click)="goToDocument()">
+      Previous
+    </button>
+    <button class="nav-btn primary" (click)="submitReview()">
+      Submit Helper
+    </button>
+  </div>
 </div>
+
+<ng-template #noData>
+  <div class="no-data">
+    <p>No helper details found. Please complete the form first.</p>
+    <button class="nav-btn primary" (click)="goToForm()">
+      Go to Form
+    </button>
+  </div>
+</ng-template>

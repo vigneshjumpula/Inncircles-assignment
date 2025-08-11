@@ -2,12 +2,7 @@
   <div class="details-header">
     <div class="helper-profile">
       <div class="profile-avatar">
-        <img 
-          *ngIf="helper.upload_photo || helper.photo" 
-          [src]="helper.upload_photo || helper.photo" 
-          [alt]="helper.full_name" />
         <div 
-          *ngIf="!helper.upload_photo && !helper.photo" 
           class="avatar-placeholder-large"
           [style.backgroundColor]="getAvatarColor(helper.full_name)">
           {{ getInitials(helper.full_name) }}
@@ -19,10 +14,10 @@
       </div>
     </div>
     <div class="action-buttons">
-      <button class="edit-btn">
+      <button class="edit-btn" (click)="onEditClick()">
         <img src="assets/pen.png" alt="edit" />
       </button>
-      <button class="delete-btn">
+      <button class="delete-btn" (click)="onDeleteClick()">
         <img src="assets/delete.png" alt="delete" />
       </button>
     </div>
@@ -38,7 +33,7 @@
       </div>
       <div class="detail-item">
         <span class="detail-label">IDENTIFICATION CARD :</span>
-        <span class="detail-value view-link">🔗 View</span>
+        <span class="detail-value view-link" (click)="openQrDialog()">🔗 View</span>
       </div>
     </div>
 
@@ -51,7 +46,7 @@
       </div>
       <div class="detail-item">
         <span class="detail-label">Language(s) :</span>
-        <span class="detail-value">{{ helper.languages?.join(', ') }}</span>
+        <span class="detail-value">{{ getLanguagesDisplay() }}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Mobile No :</span>

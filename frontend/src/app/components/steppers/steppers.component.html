@@ -1,19 +1,54 @@
 <div class="stepper-container">
   <div class="stepper-layout">
-    <div class="stepper-nav">
-      <h3>Helper Registration</h3>
-      <mat-stepper orientation="vertical" [linear]="isLinear" #stepper>
-        <mat-step [stepControl]="firstFormGroup">
-          <ng-template matStepLabel>Helper Details</ng-template>
-        </mat-step>
-        <mat-step [stepControl]="secondFormGroup">
-          <ng-template matStepLabel>Document Upload</ng-template>
-        </mat-step>
-        <mat-step>
-          <ng-template matStepLabel>Review & Submit</ng-template>
-        </mat-step>
-      </mat-stepper>
-    </div>
+    <mat-stepper 
+      #stepper 
+      [selectedIndex]="currentStep" 
+      orientation="vertical"
+      [linear]="true"
+      (selectionChange)="onStepClick($event)">
+      
+      <!-- Add Helper Mode - 3 Steps -->
+      <mat-step 
+        *ngIf="!isEditMode"
+        [completed]="steps[0].completed"
+        [editable]="true">
+        <ng-template matStepLabel>Helper Details</ng-template>
+        <div>Enter helper personal and service details</div>
+      </mat-step>
+      
+      <mat-step 
+        *ngIf="!isEditMode"
+        [completed]="steps[1].completed"
+        [editable]="canNavigateToStep(1)">
+        <ng-template matStepLabel>Document Upload</ng-template>
+        <div>Upload required documents (Optional)</div>
+      </mat-step>
+      
+      <mat-step
+        *ngIf="!isEditMode"
+        [completed]="steps[2].completed"
+        [editable]="canNavigateToStep(2)">
+        <ng-template matStepLabel>Review & Submit</ng-template>
+        <div>Review all details before submission</div>
+      </mat-step>
+      
+      <!-- Edit Helper Mode - 2 Steps -->
+      <mat-step 
+        *ngIf="isEditMode"
+        [completed]="steps[0].completed"
+        [editable]="true">
+        <ng-template matStepLabel>Helper Details</ng-template>
+        <div>Edit helper personal and service details</div>
+      </mat-step>
+
+      <mat-step 
+        *ngIf="isEditMode"
+        [completed]="steps[1].completed"
+        [editable]="true">
+        <ng-template matStepLabel>Documents</ng-template>
+        <div>Edit required documents (Optional)</div>
+      </mat-step>
+    </mat-stepper>
   </div>
 </div>
 

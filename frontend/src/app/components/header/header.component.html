@@ -2,32 +2,79 @@
   <h1>Header</h1>
   <div class="header-row">
     <div class="header-left">
-      <button class="icon-button" (click)="toggleSidebar()">
-        <img src="assets/arrow.png" alt="sort icon" />
-      </button>
-      
-      <!-- Sort Dropdown -->
-      <div class="sort-dropdown-container" *ngIf="visibleSort">
-        <mat-form-field class="sort-form-field">
-          <mat-label>Sort Options</mat-label>
-          <mat-select [(value)]="selectedSort" (selectionChange)="onSortChange($event.value)">
-            @for (option of sortOptions; track option.value) {
-              <mat-option [value]="option.value">{{option.viewValue}}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
+      <div class="sort-button-container">
+        <button class="icon-button" (click)="toggleSidebar()">
+          <img src="assets/arrow.png" alt="sort icon" />
+        </button>
+        <!-- Sort Dropdown -->
+        <div class="sort-dropdown-container" *ngIf="visibleSort">
+          <mat-form-field class="sort-form-field">
+            <mat-label>Sort Options</mat-label>
+            <mat-select [(value)]="selectedSort" (selectionChange)="onSortChange($event.value)">
+              @for (option of sortOptions; track option.value) {
+                <mat-option [value]="option.value">{{option.viewValue}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
       </div>
       
-      <button class="action-button">
-        <img src="assets/filter.png" alt="filter icon" />
-      </button>
+      <div class="filter-button-container">
+        <button class="action-button" (click)="toggleFilter()">
+          <img src="assets/filter.png" alt="filter icon" />
+        </button>
+        <!-- Filter Dropdown -->
+        <div class="filter-dropdown-container" *ngIf="visibleFilter">
+          <div class="filter-header">
+            Filter By
+          </div>
+          
+          <!-- Service Filter -->
+          <div class="filter-section">
+            <label class="filter-label">Service</label>
+            <div class="checkbox-group">
+              @for (service of serviceOptions; track service) {
+                <label class="checkbox-item">
+                  <input type="checkbox" [value]="service" (change)="onServiceFilterChange($event)" [checked]="selectedServices.includes(service)">
+                  <span>{{service}}</span>
+                </label>
+              }
+            </div>
+          </div>
+          
+          <!-- Organization Filter -->
+          <div class="filter-section">
+            <label class="filter-label">Organization</label>
+            <div class="checkbox-group">
+              @for (org of organizationOptions; track org) {
+                <label class="checkbox-item">
+                  <input type="checkbox" [value]="org" (change)="onOrganizationFilterChange($event)" [checked]="selectedOrganizations.includes(org)">
+                  <span>{{org}}</span>
+                </label>
+              }
+            </div>
+          </div>
+          
+          <!-- Action buttons -->
+          <div class="filter-actions">
+            <button class="reset-btn" (click)="resetFilters()">Reset</button>
+            <button class="apply-btn" (click)="applyFilters()">Apply</button>
+          </div>
+        </div>
+      </div>
       <div class="search-bar">
         <img src="assets/magnifying-glass.png" alt="search icon" class="search-bar-icon">
         <input 
           type="text" 
           placeholder="Name, Employee ID, Phone" 
           class="search-bar-input"
+          [(ngModel)]="searchText"
+          (input)="onSearchChange()"
         />
+      </div>
+      <div>
+          <p *ngIf="searchText!=='' || (selectedServices.length>0 || selectedOrganizations.length>0)"> {{ visibleCount() }} of {{ totalCount() }} helpers</p>
+          <p *ngIf="searchText==='' && (selectedServices.length===0 && selectedOrganizations.length===0)">{{totalCount()}} helpers</p>
       </div>
     </div>
     <div class="header-right">

@@ -4,7 +4,8 @@ import  mongoose, { Schema }  from 'mongoose';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/helpers')
     .then(() => {
@@ -14,8 +15,6 @@ mongoose.connect('mongodb://localhost:27017/helpers')
 });
 
 const userSchema = new Schema({
-  // id: { type: Number },
-  upload_photo: { type: String, default: '' },
   type_of_service: { type: String, required: true },
   organization_name: { type: String, required: true },
   full_name: { type: String, required: true },
@@ -55,6 +54,54 @@ app.post('/api/helpers', async (req, res) => {
         res.status(500).json({ error: 'Failed to save user' });
     }
 });
+
+// PUT route for updating a helper
+app.put('/api/helpers/:id', async (req, res) => {
+    console.log('Update request received for ID:', req.params.id);
+    console.log('Update data:', req.body);
+    try {
+        const userId = req.params.id;
+        const updateData = req.body;
+        
+        const updatedUser = await User.findByIdAndUpdate(
+            userId, 
+            updateData, 
+            { new: true, runValidators: true }
+        );
+        
+        if (!updatedUser) {
+            console.log('User not found with ID:', userId);
+            return res.status(404).json({ error: 'User not found' });
+        }
+        
+        console.log('User updated successfully:', updatedUser);
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ error: 'Failed to update user' });
+    }
+});
+
+app.delete('/api/helpers/:id', async (req, res) => {
+  console.log('Delete request received for ID:', req.params.id);
+     try{
+        const userId = req.params.id;
+        console.log('Attempting to delete user with ID:', userId);
+        
+        const deletedUser = await User.findByIdAndDelete(userId);
+        if (!deletedUser) {
+            console.log('User not found with ID:', userId);
+            return res.status(404).json({ error: 'User not found' });
+        }
+        
+        console.log('User deleted successfully:', deletedUser);
+        res.status(200).json({ message: 'User deleted successfully', deletedUser });
+     }
+     catch(error){
+        console.error('Error deleting user:', error);
+        res.status(500).json({ error: 'Failed to delete user' });
+     }
+})
 
 app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000');

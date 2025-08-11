@@ -1,44 +1,74 @@
 .sidebar-container {
-  width: 280px;
-  border-radius: 8px;
-  padding: 8px 0;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  overflow-y: scroll;
   overflow-x: hidden;
-  background: #f8f9fa;
+  background: #ffffff;
+  box-sizing: border-box;
+  position: relative;
+  
+  /* Make scrollbar more visible */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #6c757d;
+    border-radius: 6px;
+    border: 2px solid #f8f9fa;
+    
+    &:hover {
+      background: #495057;
+    }
+  }
   
   .helpers-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 0 8px;
+    width: 100%;
+    box-sizing: border-box;
+    /* Remove min-height that was preventing proper scrolling */
   }
 
   .helper-card {
     display: flex;
     align-items: center;
-    padding: 12px;
+    padding: 12px 16px;
     background: #ffffff;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
+    border-bottom: 1px solid #e9ecef;
     cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 80px; 
+    max-height: 80px;
+    position: relative;
 
     &:hover {
       background: #f8f9fa;
-      border-color: #dee2e6;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transform: translateX(2px);
     }
 
     &.active {
       background: #e3f2fd;
-      border-color: #2196f3;
-      box-shadow: 0 4px 8px rgba(33, 150, 243, 0.15);
+      border-left: 4px solid #2196f3;
+      box-shadow: 0 2px 4px rgba(33, 150, 243, 0.1);
     }
 
     &:focus {
       outline: none;
-      border-color: #2196f3;
-      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+      background: #f8f9fa;
+    }
+
+    &:last-child {
+      border-bottom: none;
     }
   }
 
@@ -70,7 +100,7 @@
 
   .helper-info {
     flex-grow: 1;
-    min-width: 0; // Allows text to truncate properly
+    min-width: 0;
 
     .helper-name {
       margin: 0 0 4px 0;
@@ -112,49 +142,6 @@
       color: #6c757d;
       font-weight: 500;
       line-height: 1.2;
-    }
-  }
-
-  // Responsive adjustments for smaller screens
-  @media (max-width: 320px) {
-    width: 260px;
-    
-    .helper-card {
-      padding: 10px;
-    }
-
-    .helper-avatar {
-      margin-right: 10px;
-
-      .avatar-image,
-      .avatar-placeholder {
-        width: 40px;
-        height: 40px;
-      }
-
-      .avatar-placeholder {
-        font-size: 14px;
-      }
-    }
-
-    .helper-info {
-      .helper-name {
-        font-size: 13px;
-      }
-
-      .helper-role {
-        font-size: 11px;
-      }
-
-      .helper-duration {
-        font-size: 10px;
-      }
-    }
-
-    .helper-extra {
-      .helper-stat {
-        font-size: 10px;
-      }
     }
   }
 }

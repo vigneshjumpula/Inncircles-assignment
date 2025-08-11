@@ -28,5 +28,14 @@ export const routes: Routes = [
             { path: 'helper/document', component: DocumentComponent },
             { path: 'helper/review',   component: ReviewComponent }
         ]
+    },
+    {
+        path: 'edit-helper',
+        component: AddHelperComponent,
+        children: [
+            { path: '', redirectTo: 'form', pathMatch: 'full' },
+            { path: 'form',     component: FormComponent },
+            { path: 'document', component: DocumentComponent }
+        ]
     }
 ];

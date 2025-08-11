@@ -1,7 +1,8 @@
 .form-container {
   width: 100%;
   margin: 0;
-  padding: 20px 40px;
+  // padding: 20px 40px;
+  overflow-x: hidden;
 }
 
 .form-header {
@@ -139,6 +140,34 @@ input, select {
   }
 }
 
+.avatar-container {
+  .avatar-info {
+    display: block;
+    color: #6c757d;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+  
+  .avatar-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 15px rgba(75, 95, 242, 0.2);
+
+    .avatar-text {
+      color: white;
+      font-size: 48px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+}
+
 input:focus, select:focus {
   border-color: #007bff;
   outline: none;
@@ -148,6 +177,18 @@ input:focus, select:focus {
 input.ng-valid.ng-touched,
 select.ng-valid.ng-touched {
   border-color: #28a745;
+}
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border-color: #dc3545;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
 }
 
 // Languages checkbox styling
@@ -223,10 +264,14 @@ select.ng-valid.ng-touched {
 }
 
 // Next button styling
+.nav-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 40px;
+  padding: 20px 0;
+}
+
 .next-button {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
   background: #000000;
   color: white;
   border: none;
@@ -266,4 +311,65 @@ select.ng-valid.ng-touched {
     }
   }
 }
+
+// Photo preview styles
+.photo-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  
+  .preview-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #e1e5e9;
+  }
+}
+
+.file-selected {
+  padding: 15px;
+  border: 2px dashed #28a745;
+  border-radius: 8px;
+  background-color: #f8fff9;
+  text-align: center;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  
+  span {
+    font-size: 14px;
+    color: #333;
+    flex: 1;
+  }
+}
+
+.remove-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  
+  &:hover {
+    background: #c82333;
+  }
+  
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
 
