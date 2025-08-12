@@ -69,22 +69,9 @@ export class HeaderComponent {
   }
 
   onSortChange(value: string) {
-    this.selectedSort = value;
-    // apply sort to filter[]
-
-
-    // let helpers = this.helperDetailsService.getHelpers(); 
-
-    if (value === 'name-asc') {
-      this.filter.sort((a, b) => a.full_name.localeCompare(b.full_name));
-      this.visibleSort = false;
-    } else if (value === 'joined-date') {
-      this.filter.sort((a, b) => {
-        return new Date(b.joined_date).getTime() - new Date(a.joined_date).getTime();
-      });
-      this.visibleSort = false;
-    }
-    this.helperDetailsService.setHelpers(this.filter);
+  this.selectedSort = value;
+  this.visibleSort = false;
+  this.applyAllFilters();
   }
 
   onServiceFilterChange(event: any) {
@@ -94,6 +81,7 @@ export class HeaderComponent {
     } else {
       this.selectedServices = this.selectedServices.filter(s => s !== service);
     }
+    this.applyAllFilters();
   }
 
   onOrganizationFilterChange(event: any) {
@@ -103,62 +91,64 @@ export class HeaderComponent {
     } else {
       this.selectedOrganizations = this.selectedOrganizations.filter(o => o !== org);
     }
+    this.applyAllFilters();
   }
 
   resetFilters() {
-    
     this.selectedServices = [];
     this.selectedOrganizations = [];
-    
+    this.searchText = "";
+    this.selectedSort = "";
     const checkboxes = document.querySelectorAll('.filter-dropdown-container input[type="checkbox"]');
     checkboxes.forEach((checkbox: any) => checkbox.checked = false);
+    this.applyAllFilters();
   }
 
   applyFilters() {
-   
-    let helpers = this.helperDetailsService.getHelpers();
-    let filteredHelpers = this.filter;
-
-    // Filter by services
-    if (this.selectedServices.length > 0) {
-      filteredHelpers = filteredHelpers.filter(helper => 
-        this.selectedServices.includes(helper.type_of_service)
-      );
-    }
-
-    // Filter by organizations
-    if (this.selectedOrganizations.length > 0) {
-      filteredHelpers = filteredHelpers.filter(helper => 
-        this.selectedOrganizations.includes(helper.organization_name)
-      );
-    }
-    console.log('Filtered helpers:', filteredHelpers);
-    this.helperDetailsService.setFilter(filteredHelpers);
     this.visibleFilter = false;
-    console.log('Filters applied:', { services: this.selectedServices, organizations: this.selectedOrganizations });
-
-  
-  // End of applyFilters
-  
+    this.applyAllFilters();
   }
   // add the filter 
    searchText:string ="";
+   
+   // Main unified function for sort, filter, and search
+   applyAllFilters() {
+     let helpers = [...this.alldetails];
+
+     // Apply search first
+     const text = this.searchText.trim().toLowerCase();
+     if (text) {
+       helpers = helpers.filter(h =>
+         (h.full_name && h.full_name.toLowerCase().includes(text)) ||
+         (h.type_of_service && h.type_of_service.toLowerCase().includes(text)) ||
+         (h.phone_number && h.phone_number.toString().includes(text))
+       );
+     }
+
+     // Apply service filter
+     if (this.selectedServices.length > 0) {
+       helpers = helpers.filter(h => this.selectedServices.includes(h.type_of_service));
+     }
+
+     // Apply organization filter
+     if (this.selectedOrganizations.length > 0) {
+       helpers = helpers.filter(h => this.selectedOrganizations.includes(h.organization_name));
+     }
+
+     // Apply sort
+     if (this.selectedSort === 'name-asc') {
+       helpers.sort((a, b) => a.full_name.localeCompare(b.full_name));
+     } else if (this.selectedSort === 'joined-date') {
+       helpers.sort((a, b) => new Date(b.joined_date).getTime() - new Date(a.joined_date).getTime());
+     }
+
+     // Update the service with filtered results
+     this.helperDetailsService.setFilter(helpers);
+   }
+
    onSearchChange(){
-       const text=this.searchText.trim().toLowerCase();
-      //  let helpers=this.helperDetailsService.getHelpers();
-      let helpers = this.filter;
-       if(text){
-        const filtered=helpers.filter(h=>
-            (h.full_name && h.full_name.toLowerCase().includes(text)) || 
-            (h.type_of_service && h.type_of_service.toLowerCase().includes(text)) ||
-            (h.phone_number  && h.phone_number.toString().includes(text))
-        )
-        this.helperDetailsService.setFilter(filtered);
-       }
-       else {
-         this.helperDetailsService.setFilter(this.alldetails);
-       }
-      }
+     this.applyAllFilters();
+   }
 
 
 }

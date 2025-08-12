@@ -11,7 +11,6 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./left.component.scss']
 })
 export class LeftComponent implements OnInit {
-  // Computed signal that reflects the service's helpers signal
   helpers = computed(() => this.helperDetailsService.getFilter());
   selectedHelperId: string | null = null;
 
@@ -20,8 +19,15 @@ export class LeftComponent implements OnInit {
     private router: Router
   ) {}
   
-  ngOnInit(): void {
+  
     // No manual loading needed; computed signal updates automatically
+    ngOnInit(): void {
+  const helpers = this.helpers();
+  if (helpers && helpers.length > 0) {
+    this.selectedHelperId = helpers[0]._id;
+    this.router.navigate(['/main/helpers', helpers[0]._id]);
+  }
+
   }
 
   // Handle click event on a helper item: set selection and navigate to detail

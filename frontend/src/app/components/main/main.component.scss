@@ -1,6 +1,6 @@
 .app-layout {
   height: 100vh;
-  overflow-x: hidden;
+  overflow: hidden; // Prevent page scroll
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -20,7 +20,7 @@
       border-radius: 8px;
       display: flex;
       flex-direction: column;
-      overflow-y: auto;
+      overflow-y: auto; // Allow scrolling within each container
     }
 
     .left-container {
@@ -34,7 +34,6 @@
       width: 75%;
       flex-shrink: 0;
       height: 100%;
-      overflow-y: auto;
     }
   }
 }

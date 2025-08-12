@@ -11,14 +11,12 @@ import { computed } from '@angular/core';
 export class HelperDetailsService {
   
   public readonly helpers: WritableSignal<any[]> = signal<any[]>([]);
-  // Signal to store original (total) helpers list for count
-  //public readonly originalHelpers: WritableSignal<any[]> = signal<any[]>([]);
   private readonly filter: WritableSignal<any[]> = signal<any[]>([]);
   private isEditMode: boolean = false;
   private editingHelperId: string | null = null;
   constructor(private http: HttpClient) {
     
-    // Initial load: set both original and current helpers
+   
     this.loadHelpers().subscribe({
       next: data => {
         this.filter.set(data);
@@ -31,9 +29,7 @@ export class HelperDetailsService {
   perDetails: any;
   Document: any;
 
-  /**
-   * Returns the cached helpers array synchronously
-   */
+ 
   getHelpers(): any[] {
     console.log('Returning cached helpers:', this.helpers);
   return this.helpers();
@@ -46,7 +42,6 @@ export class HelperDetailsService {
     this.filter.set(filter);
   }
 
-  // Manually overwrite cached helpers
   setHelpers(helpers: any[]): void {
     this.helpers.set(helpers);
   }
@@ -54,8 +49,7 @@ export class HelperDetailsService {
   loadHelpers(): Observable<any[]> {
     return this.http.get<any[]>('http://localhost:3000/api/helpers')
       .pipe(
-        tap(data => {
-          // Update both original and current helpers on each load/reload
+        tap(data => {  
           this.filter.set(data);
           this.helpers.set(data);
           console.log('Helpers fetched and cached:', this.helpers());
@@ -122,17 +116,8 @@ export class HelperDetailsService {
       phone_number: this.perDetails.phone_number,
       email: this.perDetails.email,
       choose_vehicle: this.perDetails.choose_vehicle,
-      // Include only small document references, not full base64 data
       kyc: this.perDetails.kyc ? 'document_uploaded' : '',
-      // Skip large base64 document data to avoid payload size issues
     };
-    
-    // Debug payload size
-    const payloadString = JSON.stringify(payload);
-    const payloadSizeKB = Math.round(payloadString.length / 1024);
-    const payloadSizeMB = Math.round(payloadSizeKB / 1024 * 100) / 100;
-    console.log(`Simplified payload size: ${payloadSizeKB} KB (${payloadSizeMB} MB)`);
-    console.log('Simplified payload:', payload);
     
     return this.http.post<any>('http://localhost:3000/api/helpers', payload)
       .pipe(

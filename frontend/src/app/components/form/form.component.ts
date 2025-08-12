@@ -109,35 +109,35 @@ export class FormComponent implements OnInit {
         return colors[index];
     }
 
-    // onKycSelected(event: any) {
-    //     const file: File = event.target.files[0];
-    //     if (file) {
-    //         if (this.validateFile(file)) {
-    //             this.selectedKycFile = file;
-    //             this.convertFileToBase64(file).then(base64 => {
-    //                 this.userForm.patchValue({ kyc: base64 });
-    //             });
-    //         }
-    //     }
-    // }
+    onKycSelected(event: any) {
+        const file: File = event.target.files[0];
+        if (file) {
+            if (this.validateFile(file)) {
+                this.selectedKycFile = file;
+                this.convertFileToBase64(file).then(base64 => {
+                    this.userForm.patchValue({ kyc: base64 });
+                });
+            }
+        }
+    }
 
-    // private convertFileToBase64(file: File): Promise<string> {
-    //     return new Promise((resolve, reject) => {
-    //         const reader = new FileReader();
-    //         reader.readAsDataURL(file);
-    //         reader.onload = () => resolve(reader.result as string);
-    //         reader.onerror = error => reject(error);
-    //     });
-    // }
+    private convertFileToBase64(file: File): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = error => reject(error);
+        });
+    }
 
-    // private validateFile(file: File): boolean {
-    //     const maxSize = 1 * 1024 * 1024; // 1MB
-    //     if (file.size > maxSize) {
-    //         alert('File size must be less than 1MB');
-    //         return false;
-    //     }
-    //     return true;
-    // }
+    private validateFile(file: File): boolean {
+        const maxSize = 1 * 1024 * 1024; 
+        if (file.size > maxSize) {
+            alert('File size must be less than 1MB');
+            return false;
+        }
+        return true;
+    }
 
     get f() { return this.userForm.controls; }
 
@@ -157,14 +157,14 @@ export class FormComponent implements OnInit {
         }
     }
 
-    // removeKyc() {
-    //     this.selectedKycFile = null;
-    //     this.userForm.patchValue({ kyc: '' });
-    // }
+    removeKyc() {
+        this.selectedKycFile = null;
+        this.userForm.patchValue({ kyc: '' });
+    }
 
-    // getKycFileName(): string {
-    //     return this.selectedKycFile ? this.selectedKycFile.name : '';
-    // }
+    getKycFileName(): string {
+        return this.selectedKycFile ? this.selectedKycFile.name : '';
+    }
 
     private markFormGroupTouched(formGroup: FormGroup) {
         Object.keys(formGroup.controls).forEach(field => {

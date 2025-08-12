@@ -1,5 +1,5 @@
 <div class="header-container">
-  <h1>Header</h1>
+  <h1>Helpers</h1>
   <div class="header-row">
     <div class="header-left">
       <div class="sort-button-container">
@@ -73,8 +73,8 @@
         />
       </div>
       <div>
-          <p *ngIf="searchText!=='' || (selectedServices.length>0 || selectedOrganizations.length>0)"> {{ visibleCount() }} of {{ totalCount() }} helpers</p>
-          <p *ngIf="searchText==='' && (selectedServices.length===0 && selectedOrganizations.length===0)">{{totalCount()}} helpers</p>
+          <p *ngIf="searchText!=='' || (selectedServices.length>0 || selectedOrganizations.length>0) " class="filter-count"> {{ visibleCount() }} of {{ totalCount() }} helpers</p>
+          <p *ngIf="searchText==='' && (selectedServices.length===0 && selectedOrganizations.length===0)" class="filter-count">{{totalCount()}} helpers</p>
       </div>
     </div>
     <div class="header-right">
