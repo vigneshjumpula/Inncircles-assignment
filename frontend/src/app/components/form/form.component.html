@@ -7,12 +7,30 @@
     <form [formGroup]="userForm" (ngSubmit)="submitForm()">
         
         <div class="form-group">
-            <label>Profile Avatar:</label>
-            <div class="avatar-container">
-                <div class="avatar-circle" [style.backgroundColor]="getAvatarColor()">
-                    <span class="avatar-text">{{ getAvatarLetter() }}</span>
+            <label for="profile">Upload Profile:</label>
+            <div class="file-upload-container">
+                <div class="upload-circle" *ngIf="!selectedProfileFile">
+                    <input type="file" id="profile" (change)="onProfileSelected($event)" accept="image/*" />
+                    <mat-icon class="upload-icon">cloud_upload</mat-icon>
+                    <span class="circle-text">Upload Profile Image</span>
                 </div>
-                <small class="avatar-info">Avatar shows the first letter of your name</small>
+                <div class="file-selected" *ngIf="selectedProfileFile && !profileImageUrl">
+                    <div class="file-info">
+                        <mat-icon>description</mat-icon>
+                        <span>{{ getProfileFileName() }}</span>
+                        <button type="button" class="remove-btn" (click)="removeProfile()">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                </div>
+                <div class="image-preview" *ngIf="profileImageUrl">
+                    <img [src]="profileImageUrl" alt="Profile Preview" class="preview-image" />
+                    <button type="button" class="remove-btn-overlay" (click)="removeProfile()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <div class="image-name">{{ getProfileFileName() }}</div>
+                </div>
+                <small class="file-info">Supported formats: JPG, JPEG, PNG (Max 1MB)</small>
             </div>
         </div>
 
@@ -141,7 +159,7 @@
                     <mat-icon class="upload-icon">cloud_upload</mat-icon>
                     <span class="circle-text">Upload Document</span>
                 </div>
-                <div class="file-selected" *ngIf="selectedKycFile">
+                <div class="file-selected" *ngIf="selectedKycFile && !kycDocumentUrl">
                     <div class="file-info">
                         <mat-icon>description</mat-icon>
                         <span>{{ getKycFileName() }}</span>
@@ -149,6 +167,13 @@
                             <mat-icon>close</mat-icon>
                         </button>
                     </div>
+                </div>
+                <div class="image-preview" *ngIf="kycDocumentUrl">
+                    <img [src]="kycDocumentUrl" alt="Document Preview" class="preview-image" />
+                    <button type="button" class="remove-btn-overlay" (click)="removeKyc()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                    <div class="image-name">{{ getKycFileName() }}</div>
                 </div>
                 <small class="file-info">Supported formats: PDF, JPG, JPEG, PNG (Max 1MB)</small>
             </div>

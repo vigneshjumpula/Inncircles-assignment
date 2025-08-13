@@ -1,8 +1,7 @@
-import { Injectable, Signal, signal, WritableSignal } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
-import { computed } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +13,10 @@ export class HelperDetailsService {
   private readonly filter: WritableSignal<any[]> = signal<any[]>([]);
   private isEditMode: boolean = false;
   private editingHelperId: string | null = null;
+  perDetails: any;
+  Document: any;
+
   constructor(private http: HttpClient) {
-    
-   
     this.loadHelpers().subscribe({
       next: data => {
         this.filter.set(data);
@@ -26,14 +26,14 @@ export class HelperDetailsService {
     });
   }
 
-  perDetails: any;
-  Document: any;
+  
 
  
   getHelpers(): any[] {
     console.log('Returning cached helpers:', this.helpers);
   return this.helpers();
   }
+
   getFilter(): any[] {
     return this.filter();
   }   
@@ -64,32 +64,29 @@ export class HelperDetailsService {
   }
  
   setHelperDetails(details: any): void {
+    console.log('Setting helper details-----:', details);
     this.perDetails = details;
   }
 
   getHelperDetails(): any {
-    // Return helper details for review/display purposes
     return this.perDetails;
   }
 
-  // Method to set edit mode and helper ID
   setEditMode(isEdit: boolean, helperId?: string): void {
     this.isEditMode = isEdit;
     this.editingHelperId = helperId || null;
     if (!isEdit) {
-      // Clear helper details when exiting edit mode
       this.perDetails = null;
       this.editingHelperId = null;
     }
   }
 
-  // Method to check if currently in edit mode
   getEditMode(): boolean {
     return this.isEditMode;
   }
 
-  // Method to get the ID of the helper being edited
-  getEditingHelperId(): string | null {
+
+  getEditingHelperId(): string | null { 
     return this.editingHelperId;
   }
 
@@ -107,26 +104,36 @@ export class HelperDetailsService {
       return this.updateHelper();
     }
     
-    const payload = {
-      type_of_service: this.perDetails.type_of_service,
-      organization_name: this.perDetails.organization_name,
-      full_name: this.perDetails.full_name,
-      languages: this.perDetails.languages,
-      gender: this.perDetails.gender,
-      phone_number: this.perDetails.phone_number,
-      email: this.perDetails.email,
-      choose_vehicle: this.perDetails.choose_vehicle,
-      kyc: this.perDetails.kyc ? 'document_uploaded' : '',
-    };
-    
-    return this.http.post<any>('http://localhost:3000/api/helpers', payload)
-      .pipe(
-        tap(() => {
-          
-          this.loadHelpers().subscribe();
-        }),
-        catchError(error => throwError(() => error))
-      );
+    const formData = new FormData();
+    const languages = typeof this.perDetails.languages === 'string' 
+      ? this.perDetails.languages.split(',').map((lang: string) => lang.trim())
+      : this.perDetails.languages;
+
+    formData.append('type_of_service', this.perDetails.type_of_service);
+    formData.append('organization_name', this.perDetails.organization_name);
+    formData.append('full_name', this.perDetails.full_name);
+    formData.append('languages', JSON.stringify(languages)); 
+    formData.append('gender', this.perDetails.gender);
+    formData.append('phone_number', String(this.perDetails.phone_number));
+    formData.append('email', this.perDetails.email);
+    formData.append('choose_vehicle', this.perDetails.choose_vehicle);
+
+    // Handle profile file upload
+    if (this.perDetails.profile instanceof File) {
+      formData.append('profile', this.perDetails.profile);
+    }
+
+    // Handle KYC file upload
+    if (this.perDetails.kyc instanceof File) {
+      formData.append('kyc', this.perDetails.kyc);
+    }
+
+console.log('Form Data to be sent:', formData);
+  return this.http.post<any>('http://localhost:3000/api/helpers', formData)
+    .pipe(
+      tap(() => this.loadHelpers().subscribe()),
+      catchError(error => throwError(() => error))
+    );
   }
 
 
@@ -141,23 +148,36 @@ export class HelperDetailsService {
       return throwError(() => new Error('No helper details available for update'));
     }
 
-    const payload = {
-      type_of_service: this.perDetails.type_of_service,
-      organization_name: this.perDetails.organization_name,
-      full_name: this.perDetails.full_name,
-      languages: this.perDetails.languages,
-      gender: this.perDetails.gender,
-      phone_number: this.perDetails.phone_number,
-      email: this.perDetails.email,
-      choose_vehicle: this.perDetails.choose_vehicle,
-      kyc: this.perDetails.kyc ? 'document_uploaded' : '',
-    };
+    // Use FormData for file uploads
+    const formData = new FormData();
+    
+    // Convert languages to array if it's a string
+    const languages = typeof this.perDetails.languages === 'string' 
+      ? this.perDetails.languages.split(',').map((lang: string) => lang.trim())
+      : this.perDetails.languages;
 
-    console.log('Updating helper with ID:', this.editingHelperId);
-    console.log('Full helper ID length:', this.editingHelperId.length);
-    console.log('Update payload:', payload);
+    formData.append('type_of_service', this.perDetails.type_of_service);
+    formData.append('organization_name', this.perDetails.organization_name);
+    formData.append('full_name', this.perDetails.full_name);
+    formData.append('languages', JSON.stringify(languages)); // Send as JSON string
+    formData.append('gender', this.perDetails.gender);
+    formData.append('phone_number', String(this.perDetails.phone_number));
+    formData.append('email', this.perDetails.email);
+    formData.append('choose_vehicle', this.perDetails.choose_vehicle);
 
-    return this.http.put<any>(`http://localhost:3000/api/helpers/${this.editingHelperId}`, payload)
+    // Handle profile file upload - only append if it's a new File object
+    if (this.perDetails.profile instanceof File) {
+      formData.append('profile', this.perDetails.profile);
+    }
+
+    // Handle KYC file upload - only append if it's a new File object
+    if (this.perDetails.kyc instanceof File) {
+      formData.append('kyc', this.perDetails.kyc);
+    }
+
+    console.log('Update FormData to be sent:', formData);
+    
+    return this.http.put<any>(`http://localhost:3000/api/helpers/${this.editingHelperId}`, formData)
       .pipe(
         tap((response) => {
           console.log('Update response:', response);

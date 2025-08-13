@@ -41,25 +41,12 @@ export class LeftComponent implements OnInit {
     return this.selectedHelperId === helper._id;
   }
 
-  // Generate two-letter initials from a full name, fallback to 'NA'
-  getInitials(fullName: string): string {
-    if (!fullName) {
-      return 'NA';
+    
+  getImgUrl(helper: any){
+    if(helper.profile!== null && helper.profile !== undefined && helper.profile !== '') {
+      return `http://localhost:3000/uploads/${helper.profile}`;
     }
-    return fullName
-      .split(' ')
-      .map(n => n.charAt(0).toUpperCase())
-      .join('')
-      .substring(0, 2);
-  }
-
-  // Assign a deterministic background color based on index
-  getAvatarColor(index: number): string {
-    const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4',
-      '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F'
-    ];
-    return colors[index % colors.length];
+    return 'https://avatar.iran.liara.run/public/93';
   }
 
   // Calculate the duration since join date in days

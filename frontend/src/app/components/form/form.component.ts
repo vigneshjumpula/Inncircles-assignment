@@ -4,6 +4,7 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { HelperDetailsService } from '../../services/helper-details.service'; 
+import { profile } from 'console';
 
 @Component({
   selector: 'app-form',
@@ -19,7 +20,10 @@ export class FormComponent implements OnInit {
     isLanguagesDropdownOpen = false;
     selectedLanguages: string[] = [];
     selectedKycFile: File | null = null;
-
+    selectedProfileFile: File | null = null;
+    selectedImage: File | null = null;
+    profileImageUrl: string | null = null;
+    kycDocumentUrl: string | null = null;
     constructor(
         private router: Router, 
         private formBuilder: FormBuilder, 
@@ -27,6 +31,7 @@ export class FormComponent implements OnInit {
         private route: ActivatedRoute
     ) {
         this.userForm = this.formBuilder.group({
+           profile: [null],
            type_of_service: ['', Validators.required],
            organization_name: ['', Validators.required],
            full_name: ['', [Validators.required, Validators.minLength(2)]],
@@ -94,6 +99,73 @@ export class FormComponent implements OnInit {
             }
             this.userForm.get('languages')?.setValue(this.selectedLanguages.join(', '));
         }
+
+        // Load profile image if exists
+        if (helperDetails.profile && helperDetails.profile !== '') {
+            if (typeof helperDetails.profile === 'string') {
+                // If profile is a filename string, construct the full URL
+                const isFullUrl = helperDetails.profile.startsWith('http');
+                this.profileImageUrl = isFullUrl ? helperDetails.profile : `http://localhost:3000/uploads/${helperDetails.profile}`;
+                // Create a mock file object for display purposes
+                this.selectedProfileFile = new File([], helperDetails.profile, { type: 'image/jpeg' });
+                this.selectedImage = this.selectedProfileFile;
+                this.userForm.patchValue({ profile: helperDetails.profile });
+            } else if (helperDetails.profile instanceof File) {
+                // If profile is a File object
+                this.selectedProfileFile = helperDetails.profile;
+                this.selectedImage = helperDetails.profile;
+                // Create preview URL
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.profileImageUrl = e.target?.result as string;
+                };
+                reader.readAsDataURL(helperDetails.profile);
+                this.userForm.patchValue({ profile: helperDetails.profile });
+            }
+        }
+
+        // Load KYC document if exists
+        if (helperDetails.kyc && helperDetails.kyc !== '') {
+            if (typeof helperDetails.kyc === 'string') {
+                // If KYC is a filename string, construct the full URL
+                const isFullUrl = helperDetails.kyc.startsWith('http');
+                const kycUrl = isFullUrl ? helperDetails.kyc : `http://localhost:3000/uploads/${helperDetails.kyc}`;
+                this.selectedKycFile = new File([], helperDetails.kyc, { type: 'image/jpeg' });
+                // Only set preview URL if it's an image
+                if (this.isImageFile(helperDetails.kyc)) {
+                    this.kycDocumentUrl = kycUrl;
+                }
+                this.userForm.patchValue({ kyc: helperDetails.kyc });
+            } else if (helperDetails.kyc instanceof File) {
+                // If KYC is a File object
+                this.selectedKycFile = helperDetails.kyc;
+                // Create preview URL for images
+                if (helperDetails.kyc.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.kycDocumentUrl = e.target?.result as string;
+                    };
+                    reader.readAsDataURL(helperDetails.kyc);
+                }
+                this.userForm.patchValue({ kyc: helperDetails.kyc });
+            }
+        }
+    }
+
+    private getFileNameFromUrl(url: string): string | null {
+        try {
+            const urlParts = url.split('/');
+            const fileName = urlParts[urlParts.length - 1];
+            return fileName || null;
+        } catch {
+            return null;
+        }
+    }
+
+    private isImageFile(fileName: string): boolean {
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+        const fileNameLower = fileName.toLowerCase();
+        return imageExtensions.some(ext => fileNameLower.endsWith(ext));
     }
 
     // Avatar methods
@@ -109,43 +181,26 @@ export class FormComponent implements OnInit {
         return colors[index];
     }
 
-    onKycSelected(event: any) {
-        const file: File = event.target.files[0];
-        if (file) {
-            if (this.validateFile(file)) {
-                this.selectedKycFile = file;
-                this.convertFileToBase64(file).then(base64 => {
-                    this.userForm.patchValue({ kyc: base64 });
-                });
-            }
-        }
-    }
-
-    private convertFileToBase64(file: File): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = error => reject(error);
-        });
-    }
-
-    private validateFile(file: File): boolean {
-        const maxSize = 1 * 1024 * 1024; 
-        if (file.size > maxSize) {
-            alert('File size must be less than 1MB');
-            return false;
-        }
-        return true;
-    }
-
     get f() { return this.userForm.controls; }
 
     submitForm() {
         this.formSubmitted = true;
         if (this.userForm.valid) {
+            // Set the profile file
+            if (this.selectedImage) {
+                this.userForm.patchValue({ profile: this.selectedImage });
+            } else {
+                this.userForm.patchValue({ profile: '' });
+            }
+
+            // Set the KYC file
+            if (this.selectedKycFile) {
+                this.userForm.patchValue({ kyc: this.selectedKycFile });
+            } else {
+                this.userForm.patchValue({ kyc: '' });
+            }
+
             this.helperDetailsService.setHelperDetails(this.userForm.value);
-            
             if (this.helperDetailsService.getEditMode()) {
                 this.router.navigate(['/edit-helper/document']);
             } else {
@@ -159,11 +214,23 @@ export class FormComponent implements OnInit {
 
     removeKyc() {
         this.selectedKycFile = null;
+        this.kycDocumentUrl = null;
         this.userForm.patchValue({ kyc: '' });
     }
 
     getKycFileName(): string {
         return this.selectedKycFile ? this.selectedKycFile.name : '';
+    }
+
+    removeProfile() {
+        this.selectedProfileFile = null;
+        this.selectedImage = null;
+        this.profileImageUrl = null;
+        this.userForm.patchValue({ profile: '' });
+    }
+
+    getProfileFileName(): string {
+        return this.selectedProfileFile ? this.selectedProfileFile.name : '';
     }
 
     private markFormGroupTouched(formGroup: FormGroup) {
@@ -209,7 +276,7 @@ export class FormComponent implements OnInit {
         return '';
     }
 
-    // Helper method to get user-friendly field names
+
     private getFieldDisplayName(fieldName: string): string {
         const fieldNames: { [key: string]: string } = {
             'type_of_service': 'Type of Service',
@@ -256,6 +323,52 @@ export class FormComponent implements OnInit {
             return this.selectedLanguages[0].charAt(0).toUpperCase() + this.selectedLanguages[0].slice(1);
         }
         return `${this.selectedLanguages.length} languages selected`;
+    }
+
+    onProfileSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            this.selectedImage = file;
+            this.selectedProfileFile = file;
+            
+            // Create preview URL
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.profileImageUrl = e.target?.result as string;
+            };
+            reader.readAsDataURL(file);
+            
+            this.userForm.patchValue({ profile: file });
+        } else {
+            this.selectedImage = null;
+            this.selectedProfileFile = null;
+            this.profileImageUrl = null;
+        }
+    }
+
+    onKycSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            this.selectedKycFile = file;
+            
+            // Create preview URL for images
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.kycDocumentUrl = e.target?.result as string;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                this.kycDocumentUrl = null;
+            }
+            
+            this.userForm.patchValue({ kyc: file });
+        } else {
+            this.selectedKycFile = null;
+            this.kycDocumentUrl = null;
+        }
     }
 }
 

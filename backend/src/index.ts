@@ -1,15 +1,15 @@
-// src/index.ts
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import path from 'path';
-import multer from 'multer';
 import mongoose, { Schema, Document } from 'mongoose';
+import multer from 'multer';
 
 const app = express();
 const PORT = 3000;
 
 // Middleware
+app.use(express.json()); // Added JSON body parser middleware
 app.use(cors());
+app.use('/uploads', express.static('uploads'));
 
 // MongoDB Connection
 mongoose
@@ -27,6 +27,7 @@ interface IUser extends Document {
   phone_number: number;
   email: string;
   choose_vehicle: string;
+  profile?: string;
   kyc?: string;
   joined_date?: Date;
   employee_code?: number;
@@ -40,13 +41,25 @@ const userSchema = new Schema<IUser>({
     phone_number: { type: Number, required: true },
     email: { type: String, required: true },
     choose_vehicle: { type: String, required: true },
+    profile: { type: String, default: '' },
     kyc: { type: String, default: '' },
     joined_date: { type: Date, default: Date.now },
     employee_code: { type: Number },
 });
 
 const User = mongoose.model<IUser>('User', userSchema);
-// Routes
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ storage });
+
 app.get('/', (_req: Request, res: Response) => {
   res.send('API is running');
 });
@@ -61,25 +74,75 @@ app.get('/api/helpers', async (_req: Request, res: Response) => {
   }
 });
 
-app.post('/api/helpers', async (req: Request, res: Response) => {
+app.post('/api/helpers', upload.fields([
+  { name: 'profile', maxCount: 1 },
+  { name: 'kyc', maxCount: 1 }
+]), async (req: Request, res: Response) => {
   try {
-    const newUser = new User(req.body);
+    const languages = req.body.languages ? JSON.parse(req.body.languages) : [];
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
+    const newUser = new User({
+      ...req.body,
+      languages,
+      phone_number: Number(req.body.phone_number),
+      profile: files?.profile?.[0]?.filename || '',
+      kyc: files?.kyc?.[0]?.filename || ''
+    });
+
     const user = await newUser.save();
     res.status(201).json(user);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to save user' });
   }
 });
 
-app.put('/api/helpers/:id', async (req: Request, res: Response) => {
+
+app.put('/api/helpers/:id', upload.fields([
+  { name: 'profile', maxCount: 1 },
+  { name: 'kyc', maxCount: 1 }
+]), async (req: Request, res: Response) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
+    console.log('Updating helper with ID:', req.params.id);
+    console.log('Update text fields:', req.body);
+    console.log('Update uploaded files:', req.files);
+
+    const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+    
+    // Parse languages if it's a string
+    let languages = req.body.languages;
+    if (typeof languages === 'string') {
+      try {
+        languages = JSON.parse(languages);
+      } catch {
+        // If parsing fails, treat as comma-separated string
+        languages = languages.split(',').map((lang: string) => lang.trim());
+      }
+    }
+
+    const updateData: any = {
+      ...req.body,
+      languages,
+      phone_number: Number(req.body.phone_number)
+    };
+
+    // Only update file paths if new files are uploaded
+    if (files?.profile?.[0]) {
+      updateData.profile = files.profile[0].filename;
+    }
+    if (files?.kyc?.[0]) {
+      updateData.kyc = files.kyc[0].filename;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
       runValidators: true,
     });
 
     if (!updatedUser) return res.status(404).json({ error: 'User not found' });
 
+    console.log('Successfully updated user:', updatedUser);
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error('Error updating user:', error);
@@ -103,3 +166,7 @@ app.delete('/api/helpers/:id', async (req: Request, res: Response) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+
+
+
+

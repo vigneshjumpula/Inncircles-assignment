@@ -16,7 +16,6 @@ export const routes: Routes = [
         path: 'main',
         component: MainComponent,
         children: [
-           
             {path: 'helpers/:id', component: RightComponent}
         ]
     },

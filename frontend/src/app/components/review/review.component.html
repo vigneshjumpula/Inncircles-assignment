@@ -8,10 +8,8 @@
     <div class="details-header">
       <div class="helper-profile">
         <div class="profile-avatar">
-          <div 
-            class="avatar-placeholder-large"
-            [style.backgroundColor]="getAvatarColor(formDetails.full_name)">
-            {{ getInitials(formDetails.full_name) }}
+          <div class="avatar-placeholder-large">
+            <img [src]="getProfileImageUrl()" alt="Profile Image" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">
           </div>
         </div>
         <div class="profile-info">

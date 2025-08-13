@@ -76,6 +76,14 @@ export class RightComponent implements OnInit {
       }
     });
   }
+   
+
+  getImgUrl(helper: any){
+    if(helper.profile!== null && helper.profile !== undefined && helper.profile !== '') {
+      return `http://localhost:3000/uploads/${helper.profile}`;
+    }
+    return 'https://avatar.iran.liara.run/public/93';
+  }
 
   getInitials(fullName: string): string {
     if (!fullName) return '';
@@ -127,7 +135,6 @@ export class RightComponent implements OnInit {
   getLanguagesDisplay(): string {
     if (!this.helper?.languages) return '-';
     if (typeof this.helper.languages === 'string') {
-      // Handle comma-separated string (with or without spaces)
       return this.helper.languages.split(',').map((lang: string) => lang.trim()).join(', ');
     }
     // Handle array format
@@ -164,8 +171,6 @@ export class RightComponent implements OnInit {
     if (this.helper && this.helper._id) {
       const id = this.helper._id;
       console.log('Editing helper with ID:', id);
-      
-      // Set edit mode with helper ID
       this.helperDetailService.setEditMode(true, id);
       
       // Clear any cached helper details since form will fetch fresh data by ID

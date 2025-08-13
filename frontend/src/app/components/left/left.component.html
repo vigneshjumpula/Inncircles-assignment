@@ -9,12 +9,9 @@
       [attr.data-helper-id]="helper._id"
     >
       <div class="helper-avatar">
-        <!-- Always show initials avatar -->
         <div
-          class="avatar-placeholder"
-          [style.background-color]="getAvatarColor(i)"
-        >
-          {{ getInitials(helper.full_name) }}
+          class="avatar-placeholder">
+         <img src="{{ getImgUrl(helper) }}" alt="" style="width: 60px; height: 60px; border-radius: 50%; object-fit: fill; "> 
         </div>
       </div>
       <div class="helper-info">

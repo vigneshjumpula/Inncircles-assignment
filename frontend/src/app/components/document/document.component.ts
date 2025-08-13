@@ -16,17 +16,11 @@ export class DocumentComponent {
   constructor(private router: Router, private helperDetailsService: HelperDetailsService) {}
 
   submitDocument() {
-    // Save document to service (can be null if no document uploaded)
     this.helperDetailsService.Document = this.docment || null;
     console.log('Document submitted:', this.docment ? 'Document uploaded' : 'No document uploaded');
     
     // Check if we're in edit mode
     if (this.helperDetailsService.getEditMode()) {
-      console.log('In edit mode, attempting to update helper...');
-      console.log('Edit mode helper ID:', this.helperDetailsService.getEditingHelperId());
-      console.log('Helper details to update:', this.helperDetailsService.getHelperDetails());
-      
-      // In edit mode, directly update the helper
       this.helperDetailsService.addHelper().subscribe({
         next: (response) => {
           console.log('Helper updated successfully:', response);
@@ -50,8 +44,10 @@ export class DocumentComponent {
   goToForm() {
     // Navigate based on edit mode
     if (this.helperDetailsService.getEditMode()) {
+      this.helperDetailsService.setDocument(this.docment);
       this.router.navigate(['/edit-helper/form']);
     } else {
+      this.helperDetailsService.setDocument(this.docment);
       this.router.navigate(['/add-helper/helper/form']);
     }
   }

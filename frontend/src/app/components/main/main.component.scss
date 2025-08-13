@@ -1,6 +1,6 @@
 .app-layout {
   height: 100vh;
-  overflow: hidden; // Prevent page scroll
+  overflow-y: auto; // Prevent page scroll
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -12,7 +12,7 @@
     padding: 16px;
     gap: 16px;
     height: calc(100vh - 80px); /* Subtract header height */
-    
+
     .left-container,
     .right-container {
       box-sizing: border-box;
