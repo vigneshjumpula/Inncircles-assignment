@@ -32,6 +32,7 @@ interface IUser extends Document {
   joined_date?: Date;
   employee_code?: number;
 }
+
 const userSchema = new Schema<IUser>({
     type_of_service: { type: String, required: true },
     organization_name: { type: String, required: true },

@@ -25,26 +25,7 @@ export class RightComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog
   ) {}
-  openQrDialog() {
-    if (!this.helper) return;
-    // Generate QR code URL with more details
-    const qrData = JSON.stringify({
-      id: this.helper._id,
-      name: this.helper.full_name,
-      organization: this.helper.organization_name,
-      service: this.helper.type_of_service,
-      phone: this.helper.phone_number
-    });
-    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(qrData)}`;
-    this.dialog.open(QrDialogComponent, {
-      data: {
-        helper: this.helper,
-        qrCodeUrl
-      },
-      width: '350px'
-    });
-  }
-
+  
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -76,7 +57,26 @@ export class RightComponent implements OnInit {
       }
     });
   }
-   
+  
+  openQrDialog() {
+    if (!this.helper) return;
+    // Generate QR code URL with more details
+    const qrData = JSON.stringify({
+      id: this.helper._id,
+      name: this.helper.full_name,
+      organization: this.helper.organization_name,
+      service: this.helper.type_of_service,
+      phone: this.helper.phone_number
+    });
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(qrData)}`;
+    this.dialog.open(QrDialogComponent, {
+      data: {
+        helper: this.helper,
+        qrCodeUrl
+      },
+      width: '350px'
+    });
+  }
 
   getImgUrl(helper: any){
     if(helper.profile!== null && helper.profile !== undefined && helper.profile !== '') {
@@ -85,35 +85,7 @@ export class RightComponent implements OnInit {
     return 'https://avatar.iran.liara.run/public/93';
   }
 
-  getInitials(fullName: string): string {
-    if (!fullName) return '';
-    return fullName
-      .split(' ')
-      .map(name => name.charAt(0).toUpperCase())
-      .join('')
-      .substring(0, 2);
-  }
 
-  // Generate a consistent color for avatar based on name
-  getAvatarColor(fullName: string): string {
-    if (!fullName) return '#cccccc';
-    
-    const colors = [
-      '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57',
-      '#FF9FF3', '#54A0FF', '#5F27CD', '#00D2D3', '#FF9F43',
-      '#6C5CE7', '#A29BFE', '#FD79A8', '#E17055', '#00B894'
-    ];
-    
-    let hash = 0;
-    for (let i = 0; i < fullName.length; i++) {
-      hash = fullName.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    
-    const index = Math.abs(hash) % colors.length;
-    return colors[index];
-  }
-
-  // Format date to readable format
   formatDate(date: any): string {
     if (!date) return '-';
     
@@ -141,6 +113,39 @@ export class RightComponent implements OnInit {
     return Array.isArray(this.helper.languages) ? 
       this.helper.languages.join(', ') : 
       this.helper.languages;
+  }
+
+  openKycDocument() {
+    if (this.helper && this.helper._id) {
+      let kycDocument = this.helper.kyc;
+      console.log('KYC document value:', kycDocument);
+      if (kycDocument) {
+        // If it's a File object (from frontend upload)
+        if (kycDocument instanceof File) {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            const fileUrl = e.target.result;
+            window.open(fileUrl, '_blank');
+          };
+          reader.readAsDataURL(kycDocument);
+        } else if (typeof kycDocument === 'string' && kycDocument.trim() !== '') {
+          // If it's a filename or URL from backend
+          let fileUrl = '';
+          if (kycDocument.startsWith('http')) {
+            fileUrl = kycDocument;
+          } else {
+            fileUrl = `http://localhost:3000/uploads/${kycDocument}`;
+          }
+          window.open(fileUrl, '_blank');
+        } else {
+          alert('KYC document is not available.');
+        }
+      } else {
+        alert('KYC document is not available.');
+      }
+    } else {
+      console.error('No helper selected for KYC process');
+    }
   }
 
   onDeleteClick() {

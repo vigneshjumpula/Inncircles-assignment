@@ -25,7 +25,18 @@ export class HelperDetailsService {
       error: err => console.error('Failed to load initial helpers:', err)
     });
   }
-
+  
+  loadHelpers(): Observable<any[]> {
+    return this.http.get<any[]>('http://localhost:3000/api/helpers')
+      .pipe(
+        tap(data => {  
+          this.filter.set(data);
+          this.helpers.set(data);
+          console.log('Helpers fetched and cached:', this.helpers());
+        }),
+        catchError(error => throwError(() => error))
+      );
+  }
   
 
  
@@ -46,17 +57,6 @@ export class HelperDetailsService {
     this.helpers.set(helpers);
   }
  
-  loadHelpers(): Observable<any[]> {
-    return this.http.get<any[]>('http://localhost:3000/api/helpers')
-      .pipe(
-        tap(data => {  
-          this.filter.set(data);
-          this.helpers.set(data);
-          console.log('Helpers fetched and cached:', this.helpers());
-        }),
-        catchError(error => throwError(() => error))
-      );
-  }
  
   getHelperById(id: string): any {
     const list = this.helpers();
@@ -128,7 +128,7 @@ export class HelperDetailsService {
       formData.append('kyc', this.perDetails.kyc);
     }
 
-console.log('Form Data to be sent:', formData);
+  console.log('Form Data to be sent:', formData);
   return this.http.post<any>('http://localhost:3000/api/helpers', formData)
     .pipe(
       tap(() => this.loadHelpers().subscribe()),
@@ -191,6 +191,7 @@ console.log('Form Data to be sent:', formData);
         })
       );
   }
+
   deleteHelper(id: string): Observable<any> {
     console.log("deleteHelper called with ID:", id);
     console.log("ID type:", typeof id);

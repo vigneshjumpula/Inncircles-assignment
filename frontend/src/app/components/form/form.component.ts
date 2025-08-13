@@ -24,6 +24,7 @@ export class FormComponent implements OnInit {
     selectedImage: File | null = null;
     profileImageUrl: string | null = null;
     kycDocumentUrl: string | null = null;
+
     constructor(
         private router: Router, 
         private formBuilder: FormBuilder, 
@@ -31,7 +32,7 @@ export class FormComponent implements OnInit {
         private route: ActivatedRoute
     ) {
         this.userForm = this.formBuilder.group({
-           profile: [null],
+           profile: [null,Validators.required],
            type_of_service: ['', Validators.required],
            organization_name: ['', Validators.required],
            full_name: ['', [Validators.required, Validators.minLength(2)]],
@@ -40,7 +41,7 @@ export class FormComponent implements OnInit {
            phone_number: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
            email: ['', [Validators.required, Validators.email]],
            choose_vehicle: ['', Validators.required],
-           kyc: ['']
+           kyc: [null, Validators.required],
         });
     }
 
@@ -103,18 +104,14 @@ export class FormComponent implements OnInit {
         // Load profile image if exists
         if (helperDetails.profile && helperDetails.profile !== '') {
             if (typeof helperDetails.profile === 'string') {
-                // If profile is a filename string, construct the full URL
                 const isFullUrl = helperDetails.profile.startsWith('http');
                 this.profileImageUrl = isFullUrl ? helperDetails.profile : `http://localhost:3000/uploads/${helperDetails.profile}`;
-                // Create a mock file object for display purposes
                 this.selectedProfileFile = new File([], helperDetails.profile, { type: 'image/jpeg' });
                 this.selectedImage = this.selectedProfileFile;
                 this.userForm.patchValue({ profile: helperDetails.profile });
             } else if (helperDetails.profile instanceof File) {
-                // If profile is a File object
                 this.selectedProfileFile = helperDetails.profile;
                 this.selectedImage = helperDetails.profile;
-                // Create preview URL
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     this.profileImageUrl = e.target?.result as string;
@@ -127,7 +124,6 @@ export class FormComponent implements OnInit {
         // Load KYC document if exists
         if (helperDetails.kyc && helperDetails.kyc !== '') {
             if (typeof helperDetails.kyc === 'string') {
-                // If KYC is a filename string, construct the full URL
                 const isFullUrl = helperDetails.kyc.startsWith('http');
                 const kycUrl = isFullUrl ? helperDetails.kyc : `http://localhost:3000/uploads/${helperDetails.kyc}`;
                 this.selectedKycFile = new File([], helperDetails.kyc, { type: 'image/jpeg' });
@@ -152,33 +148,20 @@ export class FormComponent implements OnInit {
         }
     }
 
-    private getFileNameFromUrl(url: string): string | null {
-        try {
-            const urlParts = url.split('/');
-            const fileName = urlParts[urlParts.length - 1];
-            return fileName || null;
-        } catch {
-            return null;
-        }
-    }
+    // private getFileNameFromUrl(url: string): string | null {
+    //     try {
+    //         const urlParts = url.split('/');
+    //         const fileName = urlParts[urlParts.length - 1];
+    //         return fileName || null;
+    //     } catch {
+    //         return null;
+    //     }
+    // }
 
     private isImageFile(fileName: string): boolean {
         const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
         const fileNameLower = fileName.toLowerCase();
         return imageExtensions.some(ext => fileNameLower.endsWith(ext));
-    }
-
-    // Avatar methods
-    getAvatarLetter(): string {
-        const fullName = this.userForm.get('full_name')?.value;
-        return fullName ? fullName.charAt(0).toUpperCase() : '?';
-    }
-
-    getAvatarColor(): string {
-        const colors = ['#4B5FF2', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57', '#FF9FF3', '#54A0FF'];
-        const fullName = this.userForm.get('full_name')?.value || '';
-        const index = fullName.length % colors.length;
-        return colors[index];
     }
 
     get f() { return this.userForm.controls; }
