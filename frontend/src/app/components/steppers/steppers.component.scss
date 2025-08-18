@@ -1,4 +1,4 @@
-/* Simple stepper styling */
+
 .stepper-container {
   padding: 20px;
   height: 100%;
@@ -6,19 +6,19 @@
   flex-direction: column;
 }
 
-/* Remove internal layout since parent handles positioning */
+
 .stepper-layout {
   height: 100%;
   flex: 1;
 }
 
-/* Clean stepper appearance */
+
 mat-stepper {
   background: transparent;
   box-shadow: none;
 }
 
-/* Vertical stepper specific styling */
+
 ::ng-deep .mat-stepper-vertical {
   margin-top: 8px;
 }
@@ -31,7 +31,7 @@ mat-stepper {
   transition: all 0.3s ease;
 }
 
-/* Active step highlighting */
+
 ::ng-deep .mat-step-header.mat-step-header-selected {
   background-color: #e3f2fd !important;
   border-left: 4px solid #2196f3 !important;
@@ -47,13 +47,13 @@ mat-stepper {
   font-weight: 600 !important;
 }
 
-/* Completed step styling */
+
 ::ng-deep .mat-step-header.mat-step-header-selected.mat-step-header-completed .mat-step-icon {
   background-color: #4caf50 !important;
   color: white !important;
 }
 
-/* Disable non-accessible steps */
+
 ::ng-deep .mat-step-header.mat-step-header-disabled {
   pointer-events: none;
   opacity: 0.5;
@@ -64,18 +64,17 @@ mat-stepper {
   color: #666 !important;
 }
 
-/* Step content styling */
+
 ::ng-deep .mat-stepper-vertical .mat-vertical-content {
   padding: 0 24px 24px 24px;
 }
 
-/* Step labels */
+
 ::ng-deep .mat-step-label {
   font-size: 14px;
   font-weight: 500;
 }
 
-/* Step icons */
 ::ng-deep .mat-step-icon {
   height: 24px;
   width: 24px;

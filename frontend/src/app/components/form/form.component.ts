@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { HelperDetailsService } from '../../services/helper-details.service'; 
 import { profile } from 'console';
-
+import {Helper} from '../../models/helper.interface';
 @Component({
   selector: 'app-form',
   standalone: true,
@@ -81,7 +81,7 @@ export class FormComponent implements OnInit {
         }
     }
 
-    private loadHelperData(helperDetails: any): void {
+    private loadHelperData(helperDetails: Helper): void {
         this.userForm.patchValue({
             type_of_service: helperDetails.type_of_service || '',
             organization_name: helperDetails.organization_name || '',
@@ -101,17 +101,14 @@ export class FormComponent implements OnInit {
             this.userForm.get('languages')?.setValue(this.selectedLanguages.join(', '));
         }
 
-        // Load profile image if exists
         if (helperDetails.profile && helperDetails.profile !== '') {
             if (typeof helperDetails.profile === 'string') {
-                // Construct full URL for image preview
                 const isFullUrl = helperDetails.profile.startsWith('http');
                 const profileUrl = isFullUrl
                     ? helperDetails.profile
                     : `http://localhost:3000/uploads/${helperDetails.profile}`;
                 this.profileImageUrl = profileUrl;
                 this.userForm.patchValue({ profile: helperDetails.profile });
-                // Create a File object for display purposes
                 const file = new File([], helperDetails.profile);
                 this.selectedProfileFile = file;
                 this.selectedImage = null;
@@ -127,26 +124,20 @@ export class FormComponent implements OnInit {
             }
         }
 
-        // Load KYC document if exists
         if (helperDetails.kyc && helperDetails.kyc !== '') {
             if (typeof helperDetails.kyc === 'string') {
-                // Construct full URL for KYC document preview if image
                 const isFullUrl = helperDetails.kyc.startsWith('http');
                 const kycUrl = isFullUrl
                     ? helperDetails.kyc
                     : `http://localhost:3000/uploads/${helperDetails.kyc}`;
-                // Preview image if it's an image file
                 if (this.isImageFile(helperDetails.kyc)) {
                     this.kycDocumentUrl = kycUrl;
                 }
                 this.userForm.patchValue({ kyc: helperDetails.kyc });
-                // Create File object for display purposes
                 const file = new File([], helperDetails.kyc);
                 this.selectedKycFile = file;
             } else if (helperDetails.kyc instanceof File) {
-                // If KYC is a File object
                 this.selectedKycFile = helperDetails.kyc;
-                // Create preview URL for images
                 if (helperDetails.kyc.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
@@ -159,16 +150,7 @@ export class FormComponent implements OnInit {
         }
     }
 
-    // private getFileNameFromUrl(url: string): string | null {
-    //     try {
-    //         const urlParts = url.split('/');
-    //         const fileName = urlParts[urlParts.length - 1];
-    //         return fileName || null;
-    //     } catch {
-    //         return null;
-    //     }
-    // }
-
+    
     private isImageFile(fileName: string): boolean {
         const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
         const fileNameLower = fileName.toLowerCase();
@@ -180,14 +162,12 @@ export class FormComponent implements OnInit {
     submitForm() {
         this.formSubmitted = true;
         if (this.userForm.valid) {
-            // Set the profile file
             if (this.selectedImage) {
                 this.userForm.patchValue({ profile: this.selectedImage });
             } else {
                 this.userForm.patchValue({ profile: '' });
             }
 
-            // Set the KYC file
             if (this.selectedKycFile) {
                 this.userForm.patchValue({ kyc: this.selectedKycFile });
             } else {
@@ -234,7 +214,6 @@ export class FormComponent implements OnInit {
         });
     }
 
-    // Helper method to scroll to first error
     private scrollToFirstError() {
         const firstErrorElement = document.querySelector('.error-message');
         if (firstErrorElement) {
@@ -242,13 +221,12 @@ export class FormComponent implements OnInit {
         }
     }
 
-    // Helper method to check if field has error
+  
     hasError(fieldName: string): boolean {
         const field = this.userForm.get(fieldName);
         return !!(field && field.invalid && (field.dirty || field.touched || this.formSubmitted));
     }
 
-    // Helper method to get error message for a field
     getErrorMessage(fieldName: string): string {
         const field = this.userForm.get(fieldName);
         if (field?.errors && this.hasError(fieldName)) {
@@ -299,7 +277,7 @@ export class FormComponent implements OnInit {
             this.selectedLanguages.push(language);
         }
         
-        // Update form control with proper spacing
+       
         this.userForm.patchValue({
             languages: this.selectedLanguages.join(', ')
         });
@@ -325,8 +303,6 @@ export class FormComponent implements OnInit {
             const file = input.files[0];
             this.selectedImage = file;
             this.selectedProfileFile = file;
-            
-            // Create preview URL
             const reader = new FileReader();
             reader.onload = (e) => {
                 this.profileImageUrl = e.target?.result as string;
@@ -346,8 +322,6 @@ export class FormComponent implements OnInit {
         if (input.files && input.files.length > 0) {
             const file = input.files[0];
             this.selectedKycFile = file;
-            
-            // Create preview URL for images
             if (file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = (e) => {

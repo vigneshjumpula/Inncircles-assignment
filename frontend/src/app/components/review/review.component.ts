@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { HelperDetailsService } from '../../services/helper-details.service'; 
 import { CommonModule } from '@angular/common';
+import { Helper } from '../../models/helper.interface';
+
 
 @Component({
   selector: 'app-review',
@@ -12,8 +14,8 @@ import { CommonModule } from '@angular/common';
 })
 export class ReviewComponent implements OnInit {
     constructor(private router: Router, private helperDetailsService: HelperDetailsService) {}
-    formDetails?: any;
-    documentDetails?: any;
+    formDetails: Helper | null = null;
+    documentDetails: File | null = null;
     profileImageUrl: string | null = null;
     
     ngOnInit(){
@@ -22,7 +24,7 @@ export class ReviewComponent implements OnInit {
       console.log('Form Details:', this.formDetails);
       console.log('Document Details:', this.documentDetails);
       
-      // Process profile image
+      
       this.processProfileImage();
     }
     
@@ -86,7 +88,7 @@ export class ReviewComponent implements OnInit {
       this.router.navigate(['/add-helper/helper/form']);
     }
     
-    formatDate(date: any): string {
+    formatDate(date: Date): string {
       if (!date) return '-';
       const d = new Date(date);
       return d.toLocaleDateString('en-US', { 

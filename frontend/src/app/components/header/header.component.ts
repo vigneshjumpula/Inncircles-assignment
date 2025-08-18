@@ -6,6 +6,7 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { HelperDetailsService } from '../../services/helper-details.service';
+import {Helper} from '../../models/helper.interface';
 
 interface SortOption {
   value: string;
@@ -20,8 +21,8 @@ interface SortOption {
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
-  alldetails: any[] = [];
-  filter: any[] = [];
+  alldetails: Helper[] = [];
+  filter: Helper[] = [];
   constructor(
     private router: Router,
     private helperDetailsService: HelperDetailsService
@@ -35,7 +36,7 @@ export class HeaderComponent {
   selectedSort: string = '';
   btn: boolean = true;
 
-  // Filter options
+ 
   serviceOptions: string[] = ['cleaning', 'cooking', 'babysitting', 'security', 'gardening', 'maintenance'];
   organizationOptions: string[] = ['organization1', 'organization2', 'organization3'];
 
@@ -47,19 +48,19 @@ export class HeaderComponent {
     {value: 'joined-date', viewValue: 'Joined Date'},
   ];
 
-  // Computed counts for displaying filter results
+
   visibleCount = computed(() => this.helperDetailsService.getFilter().length);
   totalCount = computed(() => this.helperDetailsService.getHelpers().length);
 
   toggleSidebar() {
     this.visibleSort = !this.visibleSort;
-    this.visibleFilter = false; // Close filter when sort is opened
+    this.visibleFilter = false; 
     console.log('Sidebar toggled');
   }
 
   toggleFilter() {
     this.visibleFilter = !this.visibleFilter;
-    this.visibleSort = false; // Close sort when filter is opened
+    this.visibleSort = false; 
     console.log('Filter toggled');
   }
 
@@ -74,9 +75,10 @@ export class HeaderComponent {
   this.applyAllFilters();
   }
 
-  onServiceFilterChange(event: any) {
-    const service = event.target.value;
-    if (event.target.checked) {
+  onServiceFilterChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const service = target.value;
+    if (target.checked) {
       this.selectedServices.push(service);
     } else {
       this.selectedServices = this.selectedServices.filter(s => s !== service);
@@ -84,9 +86,10 @@ export class HeaderComponent {
     this.applyAllFilters();
   }
 
-  onOrganizationFilterChange(event: any) {
-    const org = event.target.value;
-    if (event.target.checked) {
+  onOrganizationFilterChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const org = target.value;
+    if (target.checked) {
       this.selectedOrganizations.push(org);
     } else {
       this.selectedOrganizations = this.selectedOrganizations.filter(o => o !== org);
@@ -100,7 +103,7 @@ export class HeaderComponent {
     this.searchText = "";
     this.selectedSort = "";
     const checkboxes = document.querySelectorAll('.filter-dropdown-container input[type="checkbox"]');
-    checkboxes.forEach((checkbox: any) => checkbox.checked = false);
+    checkboxes.forEach((checkbox: EventTarget) => (checkbox as HTMLInputElement).checked = false);
     this.applyAllFilters();
   }
 
@@ -108,14 +111,14 @@ export class HeaderComponent {
     this.visibleFilter = false;
     this.applyAllFilters();
   }
-  // add the filter 
+
    searchText:string ="";
    
-   // Main unified function for sort, filter, and search
+   
    applyAllFilters() {
      let helpers = [...this.alldetails];
 
-     // Apply search first
+   
      const text = this.searchText.trim().toLowerCase();
      if (text) {
        helpers = helpers.filter(h =>
@@ -125,24 +128,26 @@ export class HeaderComponent {
        );
      }
 
-     // Apply service filter
+
      if (this.selectedServices.length > 0) {
        helpers = helpers.filter(h => this.selectedServices.includes(h.type_of_service));
      }
 
-     // Apply organization filter
+     
      if (this.selectedOrganizations.length > 0) {
        helpers = helpers.filter(h => this.selectedOrganizations.includes(h.organization_name));
      }
 
-     // Apply sort
+   
      if (this.selectedSort === 'name-asc') {
        helpers.sort((a, b) => a.full_name.localeCompare(b.full_name));
      } else if (this.selectedSort === 'joined-date') {
-       helpers.sort((a, b) => new Date(b.joined_date).getTime() - new Date(a.joined_date).getTime());
+       helpers.sort((a, b) => 
+         new Date(b.joined_date ?? 0).getTime() - new Date(a.joined_date ?? 0).getTime()
+       );
      }
 
-     // Update the service with filtered results
+
      this.helperDetailsService.setFilter(helpers);
    }
 

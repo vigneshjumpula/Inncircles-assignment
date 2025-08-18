@@ -1,7 +1,6 @@
 .form-container {
   width: 100%;
   margin: 0;
-  // padding: 20px 40px;
   overflow-x: hidden;
 }
 
@@ -191,7 +190,6 @@ select.ng-invalid.ng-touched {
   display: block;
 }
 
-// Languages checkbox styling
 .languages-container {
   .languages-dropdown {
     position: relative;
@@ -263,7 +261,7 @@ select.ng-invalid.ng-touched {
   }
 }
 
-// Next button styling
+
 .nav-buttons {
   display: flex;
   justify-content: flex-end;
@@ -312,7 +310,7 @@ select.ng-invalid.ng-touched {
   }
 }
 
-// Photo preview styles
+
 .photo-preview {
   display: flex;
   flex-direction: column;

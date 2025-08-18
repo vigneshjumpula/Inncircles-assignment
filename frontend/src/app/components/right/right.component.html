@@ -22,12 +22,12 @@
   </div>
 
   <div class="details-content">
-    <!-- Employee ID -->
+   
     <h1 class="main-section-heading">EMPLOYEE ID</h1>
     <div class="details-col">
       <div class="detail-item">
         <span class="detail-label">EMPLOYEE ID :</span>
-        <span class="detail-value">{{ helper.employee_code || '-'  | titlecase}}</span>
+        <span class="detail-value">{{ helper.employee_code || '-' }}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">IDENTIFICATION CARD :</span>
@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <!-- Personal Details -->
+
     <h1 class="main-section-heading">PERSONAL DETAILS</h1>
     <div class="details-col">
       <div class="detail-item">
@@ -60,7 +60,7 @@
       </div>
     </div>
 
-    <!-- Service Details -->
+    
     <h1 class="main-section-heading">SERVICE DETAILS</h1>
     <div class="details-col">
       <div class="detail-item">
@@ -73,11 +73,11 @@
       </div>
       <div class="detail-item">
         <span class="detail-label">Joined On :</span>
-        <span class="detail-value">{{ formatDate(helper.joined_date) | titlecase }}</span>
+        <span class="detail-value">{{ helper.joined_date | date: 'mediumDate' }}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Vehicle :</span>
-        <span class="detail-value">{{ helper.choose_vehicle | titlecase }}</span>
+        <span class="detail-value">{{ helper.choose_vehicle | titlecase}}</span>
       </div>
     </div>
   </div>

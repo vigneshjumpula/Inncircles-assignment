@@ -5,6 +5,7 @@ import { HttpParams } from '@angular/common/http';
 import { KeyValuePipe } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
+import { Helper } from '../../models/helper.interface';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,7 +19,7 @@ import { error } from 'console';
   styleUrl: './right.component.scss'
 })
 export class RightComponent implements OnInit {
-  helper: any = null;
+  helper: Helper | null = null;
   constructor(
     private route: ActivatedRoute,
     private helperDetailService: HelperDetailsService,
@@ -32,14 +33,14 @@ export class RightComponent implements OnInit {
       console.log('Right component - ID from route:', id);
       
       if (id) {
-        this.helper = this.helperDetailService.getHelperById(id);
+        this.helper = this.helperDetailService.getHelperById(id) || null;
         console.log('Right component - Helper found:', this.helper);
         if (!this.helper) {
           console.log('Helper not found in cache, attempting to reload helpers...');
           this.helperDetailService.loadHelpers().subscribe(
             helpers => {
               console.log('Helpers reloaded, trying to find helper again...');
-              this.helper = this.helperDetailService.getHelperById(id);
+              this.helper = this.helperDetailService.getHelperById(id) || null;
               if (this.helper) {
                 console.log('Helper found after reload:', this.helper);
               } else {
@@ -60,7 +61,6 @@ export class RightComponent implements OnInit {
   
   openQrDialog() {
     if (!this.helper) return;
-    // Generate QR code URL with more details
     const qrData = JSON.stringify({
       id: this.helper._id,
       name: this.helper.full_name,
@@ -78,7 +78,7 @@ export class RightComponent implements OnInit {
     });
   }
 
-  getImgUrl(helper: any){
+  getImgUrl(helper: Helper){
     if(helper.profile!== null && helper.profile !== undefined && helper.profile !== '') {
       return `http://localhost:3000/uploads/${helper.profile}`;
     }
@@ -86,9 +86,7 @@ export class RightComponent implements OnInit {
   }
 
 
-  formatDate(date: any): string {
-    if (!date) return '-';
-    
+  formatDate(date: Date): string { 
     try {
       const parsedDate = new Date(date);
       if (isNaN(parsedDate.getTime())) return '-';
@@ -103,13 +101,13 @@ export class RightComponent implements OnInit {
     }
   }
 
-  // Format languages for display
+  
   getLanguagesDisplay(): string {
     if (!this.helper?.languages) return '-';
     if (typeof this.helper.languages === 'string') {
       return this.helper.languages.split(',').map((lang: string) => lang.trim()).join(', ');
     }
-    // Handle array format
+   
     return Array.isArray(this.helper.languages) ? 
       this.helper.languages.join(', ') : 
       this.helper.languages;
@@ -120,7 +118,7 @@ export class RightComponent implements OnInit {
       let kycDocument = this.helper.kyc;
       console.log('KYC document value:', kycDocument);
       if (kycDocument) {
-        // If it's a File object (from frontend upload)
+      
         if (kycDocument instanceof File) {
           const reader = new FileReader();
           reader.onload = (e: any) => {
@@ -129,7 +127,7 @@ export class RightComponent implements OnInit {
           };
           reader.readAsDataURL(kycDocument);
         } else if (typeof kycDocument === 'string' && kycDocument.trim() !== '') {
-          // If it's a filename or URL from backend
+          
           let fileUrl = '';
           if (kycDocument.startsWith('http')) {
             fileUrl = kycDocument;
@@ -177,12 +175,8 @@ export class RightComponent implements OnInit {
       const id = this.helper._id;
       console.log('Editing helper with ID:', id);
       this.helperDetailService.setEditMode(true, id);
-      
-      // Clear any cached helper details since form will fetch fresh data by ID
       this.helperDetailService.setHelperDetails(null);
-      this.helperDetailService.setDocument(null); // Clear document for edit
-      
-      // Navigate to edit form with the helper ID
+      this.helperDetailService.setDocument(null); 
       this.router.navigate(['/edit-helper/form'], { queryParams: { id } });
     } else {
       console.error('No helper selected for editing');

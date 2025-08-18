@@ -1,6 +1,6 @@
 .app-layout {
   height: 100vh;
-  overflow-y: auto; // Prevent page scroll
+  overflow-y: auto; 
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -11,7 +11,7 @@
     box-sizing: border-box;
     padding: 16px;
     gap: 16px;
-    height: calc(100vh - 80px); /* Subtract header height */
+    height: calc(100vh - 80px); 
 
     .left-container,
     .right-container {
@@ -20,7 +20,7 @@
       border-radius: 8px;
       display: flex;
       flex-direction: column;
-      overflow-y: auto; // Allow scrolling within each container
+      overflow-y: auto; 
     }
 
     .left-container {

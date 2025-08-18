@@ -12,6 +12,7 @@ export interface IUser extends Document {
   choose_vehicle: string;
   profile?: string;
   kyc?: string;
+  document?: string;
   joined_date?: Date;
   employee_code?: number;
 }
@@ -27,6 +28,7 @@ const userSchema = new Schema<IUser>({
   choose_vehicle: { type: String, required: true },
   profile: { type: String, default: '' },
   kyc: { type: String, default: '' },
+  document: { type: String, default: '' },
   joined_date: { type: Date, default: Date.now },
   employee_code: { type: Number },
 });

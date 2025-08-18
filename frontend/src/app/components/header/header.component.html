@@ -6,7 +6,6 @@
         <button class="icon-button" (click)="toggleSidebar()">
           <img src="assets/arrow.png" alt="sort icon" />
         </button>
-        <!-- Sort Dropdown -->
         <div class="sort-dropdown-container" *ngIf="visibleSort">
           <mat-form-field class="sort-form-field">
             <mat-label>Sort Options</mat-label>
@@ -23,13 +22,13 @@
         <button class="action-button" (click)="toggleFilter()">
           <img src="assets/filter.png" alt="filter icon" />
         </button>
-        <!-- Filter Dropdown -->
+  
         <div class="filter-dropdown-container" *ngIf="visibleFilter">
           <div class="filter-header">
             Filter By
           </div>
           
-          <!-- Service Filter -->
+        
           <div class="filter-section">
             <label class="filter-label">Service</label>
             <div class="checkbox-group">
@@ -42,7 +41,7 @@
             </div>
           </div>
           
-          <!-- Organization Filter -->
+         
           <div class="filter-section">
             <label class="filter-label">Organization</label>
             <div class="checkbox-group">
@@ -55,7 +54,6 @@
             </div>
           </div>
           
-          <!-- Action buttons -->
           <div class="filter-actions">
             <button class="reset-btn" (click)="resetFilters()">Reset</button>
             <button class="apply-btn" (click)="applyFilters()">Apply</button>

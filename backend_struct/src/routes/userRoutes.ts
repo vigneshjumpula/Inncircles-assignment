@@ -3,7 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import User, { IUser } from '../models/user';
 
-// Extend Request for multer files
+
 interface MulterRequest extends Request {
   files: {
     [fieldname: string]: Express.Multer.File[];
@@ -12,7 +12,7 @@ interface MulterRequest extends Request {
 
 const router = Router();
 
-// Multer config
+
 const storage = multer.diskStorage({
   destination: (_req: Request, _file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => 
     cb(null, path.join(__dirname, '../uploads')),
@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// GET: Fetch all helpers
+
 router.get('/', async (_req, res) => {
   try {
     const users = await User.find({});
@@ -33,12 +33,13 @@ router.get('/', async (_req, res) => {
   }
 });
 
-// POST: Create a new helper
+
 router.post(
   '/',
   upload.fields([
     { name: 'profile', maxCount: 1 },
-    { name: 'kyc', maxCount: 1 }
+    { name: 'kyc', maxCount: 1 },
+    { name: 'document', maxCount: 1 }
   ]),
   async (req: Request, res: Response) => {
     try {
@@ -58,7 +59,8 @@ router.post(
         languages,
         phone_number: Number(req.body.phone_number),
         profile: files?.profile?.[0]?.filename || '',
-        kyc: files?.kyc?.[0]?.filename || ''
+        kyc: files?.kyc?.[0]?.filename || '',
+        document: files?.document?.[0]?.filename || ''
       });
 
       const user = await newUser.save();
@@ -70,12 +72,13 @@ router.post(
   }
 );
 
-// PUT: Update a helper
+
 router.put(
   '/:id',
   upload.fields([
     { name: 'profile', maxCount: 1 },
-    { name: 'kyc', maxCount: 1 }
+    { name: 'kyc', maxCount: 1 },
+    { name: 'document', maxCount: 1 }
   ]),
   async (req: Request, res: Response) => {
     try {
@@ -100,6 +103,7 @@ router.put(
 
       if (files?.profile?.[0]) updateData.profile = files.profile[0].filename;
       if (files?.kyc?.[0]) updateData.kyc = files.kyc[0].filename;
+      if (files?.document?.[0]) updateData.document = files.document[0].filename;
 
       const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, {
         new: true,
@@ -116,7 +120,7 @@ router.put(
   }
 );
 
-// DELETE: Delete a helper
+
 router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const deletedUser = await User.findByIdAndDelete(req.params.id);

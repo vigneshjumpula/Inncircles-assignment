@@ -7,7 +7,7 @@
       [linear]="true"
       (selectionChange)="onStepClick($event)">
       
-      <!-- Add Helper Mode - 3 Steps -->
+     
       <mat-step 
         *ngIf="!isEditMode"
         [completed]="steps[0].completed"
@@ -32,7 +32,7 @@
         <div>Review all details before submission</div>
       </mat-step>
       
-      <!-- Edit Helper Mode - 2 Steps -->
+
       <mat-step 
         *ngIf="isEditMode"
         [completed]="steps[0].completed"

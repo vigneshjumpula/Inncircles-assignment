@@ -15,6 +15,5 @@ export class AppComponent {
   constructor(private helperDetailsService: HelperDetailsService) {}
   ngOnInit(){
     this.helperDetailsService.loadHelpers();
-    //console.log(this.helperDetailsService.getHelpers());
   }
 }

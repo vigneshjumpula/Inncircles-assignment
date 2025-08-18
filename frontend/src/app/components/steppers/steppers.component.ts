@@ -26,7 +26,7 @@ export class SteppersComponent implements OnInit, OnDestroy, AfterViewInit {
   isEditMode = false;
   private routerSubscription?: Subscription;
   
-  // Add Helper Steps (3 steps)
+
   addSteps = [
     {
       label: 'Helper Details',
@@ -51,7 +51,7 @@ export class SteppersComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   ];
 
-  // Edit Helper Steps (2 steps)
+
   editSteps = [
     { 
       label: 'Helper Details', 
@@ -111,7 +111,7 @@ export class SteppersComponent implements OnInit, OnDestroy, AfterViewInit {
   private updateStepFromRoute() {
     const currentUrl = this.router.url;
     
-    // Reset all steps
+    
     this.steps.forEach(step => {
       step.active = false;
       step.completed = false;
@@ -155,9 +155,10 @@ export class SteppersComponent implements OnInit, OnDestroy, AfterViewInit {
       'organization_name',
       'choose_vehicle'
     ];
-    
+  
     return requiredFields.every(field => {
       const value = formDetails[field];
+      if (value === undefined || value === null) return false;
       if (field === 'languages') {
         return Array.isArray(value) && value.length > 0;
       }
@@ -167,9 +168,9 @@ export class SteppersComponent implements OnInit, OnDestroy, AfterViewInit {
 
   canNavigateToStep(stepIndex: number): boolean {
     switch (stepIndex) {
-      case 0: return true; // Can always go to form
-      case 1: return this.isFormValid(); // Can go to document only if form is completely valid
-      case 2: return !this.isEditMode && this.isFormValid(); // Review step only exists in add mode
+      case 0: return true; 
+      case 1: return this.isFormValid(); 
+      case 2: return !this.isEditMode && this.isFormValid(); 
       default: return false;
     }
   }
@@ -179,12 +180,11 @@ export class SteppersComponent implements OnInit, OnDestroy, AfterViewInit {
       const step = this.steps[stepIndex];
       this.router.navigate([step.route]);
     } else {
-      // Show message that form must be completed first or step doesn't exist
       console.warn('Cannot navigate to this step. Please check requirements or step availability.');
     }
   }
 
-  onStepClick(event: any) {
+  onStepClick(event: { selectedIndex: number }) {
     const stepIndex = event.selectedIndex;
     this.navigateToStep(stepIndex);
   }

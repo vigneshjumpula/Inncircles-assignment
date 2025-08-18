@@ -8,7 +8,7 @@
   box-sizing: border-box;
   position: relative;
   
-  /* Make scrollbar more visible */
+  
   &::-webkit-scrollbar {
     width: 8px;
   }
@@ -34,7 +34,7 @@
     flex-direction: column;
     width: 100%;
     box-sizing: border-box;
-    /* Remove min-height that was preventing proper scrolling */
+  
   }
 
   .helper-card {

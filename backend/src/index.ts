@@ -29,6 +29,7 @@ interface IUser extends Document {
   choose_vehicle: string;
   profile?: string;
   kyc?: string;
+  additional_document?: string;
   joined_date?: Date;
   employee_code?: number;
 }
@@ -44,6 +45,7 @@ const userSchema = new Schema<IUser>({
     choose_vehicle: { type: String, required: true },
     profile: { type: String, default: '' },
     kyc: { type: String, default: '' },
+    additional_document: { type: String, default: '' },
     joined_date: { type: Date, default: Date.now },
     employee_code: { type: Number },
 });
@@ -77,7 +79,8 @@ app.get('/api/helpers', async (_req: Request, res: Response) => {
 
 app.post('/api/helpers', upload.fields([
   { name: 'profile', maxCount: 1 },
-  { name: 'kyc', maxCount: 1 }
+  { name: 'kyc', maxCount: 1 },
+  { name: 'additional_document', maxCount: 1 }
 ]), async (req: Request, res: Response) => {
   try {
     const languages = req.body.languages ? JSON.parse(req.body.languages) : [];
@@ -88,7 +91,8 @@ app.post('/api/helpers', upload.fields([
       languages,
       phone_number: Number(req.body.phone_number),
       profile: files?.profile?.[0]?.filename || '',
-      kyc: files?.kyc?.[0]?.filename || ''
+      kyc: files?.kyc?.[0]?.filename || '',
+      additional_document: files?.additional_document?.[0]?.filename || ''
     });
 
     const user = await newUser.save();

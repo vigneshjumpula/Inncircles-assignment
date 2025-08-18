@@ -11,20 +11,19 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./document.component.scss']
 })
 export class DocumentComponent {
-  docment?: any;
+  document: File | null = null;
 
   constructor(private router: Router, private helperDetailsService: HelperDetailsService) {}
 
   submitDocument() {
-    this.helperDetailsService.Document = this.docment || null;
-    console.log('Document submitted:', this.docment ? 'Document uploaded' : 'No document uploaded');
+    this.helperDetailsService.setDocument(this.document);
+    console.log('Document submitted:', this.document ? 'Document uploaded' : 'No document uploaded');
     
-    // Check if we're in edit mode
+
     if (this.helperDetailsService.getEditMode()) {
       this.helperDetailsService.addHelper().subscribe({
         next: (response) => {
           console.log('Helper updated successfully:', response);
-          // Clear edit mode after successful update
           this.helperDetailsService.setEditMode(false);
           this.router.navigate(['/']);
         },
@@ -36,29 +35,28 @@ export class DocumentComponent {
         }
       });
     } else {
-      // In add mode, go to review page
       this.router.navigate(['/add-helper/helper/review']);
     }
   }
 
   goToForm() {
-    // Navigate based on edit mode
     if (this.helperDetailsService.getEditMode()) {
-      this.helperDetailsService.setDocument(this.docment);
+      this.helperDetailsService.setDocument(this.document);
       this.router.navigate(['/edit-helper/form']);
     } else {
-      this.helperDetailsService.setDocument(this.docment);
+      this.helperDetailsService.setDocument(this.document);
       this.router.navigate(['/add-helper/helper/form']);
     }
   }
 
-  // Document upload methods
-  onFileSelected(event: any) {
-    const file: File = event.target.files[0];
+
+  onFileSelected(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const file: File | null = target.files && target.files.length > 0 ? target.files[0] : null;
     if (file) {
       if (this.validateFile(file)) {
-        this.docment = file;
-        console.log('Selected document:', this.docment);
+        this.document = file;
+        console.log('Selected document:', this.document);
       }
     } else {
       console.error('No file selected');
@@ -66,15 +64,15 @@ export class DocumentComponent {
   }
 
   getFileName(): string {
-    return this.docment ? this.docment.name : '';
+    return this.document ? this.document.name : '';
   }
 
   removeFile() {
-    this.docment = null;
+    this.document = null;
     console.log('Document removed');
   }
 
-  // File validation
+
   private validateFile(file: File): boolean {
     const maxSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
