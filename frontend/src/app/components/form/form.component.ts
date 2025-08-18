@@ -104,11 +104,17 @@ export class FormComponent implements OnInit {
         // Load profile image if exists
         if (helperDetails.profile && helperDetails.profile !== '') {
             if (typeof helperDetails.profile === 'string') {
+                // Construct full URL for image preview
                 const isFullUrl = helperDetails.profile.startsWith('http');
-                this.profileImageUrl = isFullUrl ? helperDetails.profile : `http://localhost:3000/uploads/${helperDetails.profile}`;
-                this.selectedProfileFile = new File([], helperDetails.profile, { type: 'image/jpeg' });
-                this.selectedImage = this.selectedProfileFile;
+                const profileUrl = isFullUrl
+                    ? helperDetails.profile
+                    : `http://localhost:3000/uploads/${helperDetails.profile}`;
+                this.profileImageUrl = profileUrl;
                 this.userForm.patchValue({ profile: helperDetails.profile });
+                // Create a File object for display purposes
+                const file = new File([], helperDetails.profile);
+                this.selectedProfileFile = file;
+                this.selectedImage = null;
             } else if (helperDetails.profile instanceof File) {
                 this.selectedProfileFile = helperDetails.profile;
                 this.selectedImage = helperDetails.profile;
@@ -124,14 +130,19 @@ export class FormComponent implements OnInit {
         // Load KYC document if exists
         if (helperDetails.kyc && helperDetails.kyc !== '') {
             if (typeof helperDetails.kyc === 'string') {
+                // Construct full URL for KYC document preview if image
                 const isFullUrl = helperDetails.kyc.startsWith('http');
-                const kycUrl = isFullUrl ? helperDetails.kyc : `http://localhost:3000/uploads/${helperDetails.kyc}`;
-                this.selectedKycFile = new File([], helperDetails.kyc, { type: 'image/jpeg' });
-                // Only set preview URL if it's an image
+                const kycUrl = isFullUrl
+                    ? helperDetails.kyc
+                    : `http://localhost:3000/uploads/${helperDetails.kyc}`;
+                // Preview image if it's an image file
                 if (this.isImageFile(helperDetails.kyc)) {
                     this.kycDocumentUrl = kycUrl;
                 }
                 this.userForm.patchValue({ kyc: helperDetails.kyc });
+                // Create File object for display purposes
+                const file = new File([], helperDetails.kyc);
+                this.selectedKycFile = file;
             } else if (helperDetails.kyc instanceof File) {
                 // If KYC is a File object
                 this.selectedKycFile = helperDetails.kyc;

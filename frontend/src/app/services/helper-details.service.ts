@@ -148,7 +148,7 @@ export class HelperDetailsService {
       return throwError(() => new Error('No helper details available for update'));
     }
 
-    // Use FormData for file uploads
+    
     const formData = new FormData();
     
     // Convert languages to array if it's a string
