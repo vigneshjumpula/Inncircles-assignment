@@ -1,17 +1,25 @@
 import { Component } from '@angular/core';
 import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { SteppersComponent } from '../steppers/steppers.component';
+import { HelperDetailsService } from '../../services/helper-details.service';
+import {NgIf} from '@angular/common';
+
 @Component({
   selector: 'app-add-helper',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SteppersComponent],
+  imports: [RouterOutlet, RouterLink, SteppersComponent, NgIf],
   templateUrl: './add-helper.component.html',
   styleUrls: ['./add-helper.component.scss']
 })
 export class AddHelperComponent {
-  constructor(private router: Router) {}
+  isEditMode: boolean | null = false;
 
-  backToHelper() {
+  constructor(private router: Router, private helperDetailsService: HelperDetailsService) {
+    this.isEditMode = this.helperDetailsService.getEditMode();
+    console.log('Edit mode:', this.isEditMode);
+  }
+
+  backToHelper(): void {
     this.router.navigate(['/main']);
   }
 }

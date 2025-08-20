@@ -7,21 +7,15 @@
     <form [formGroup]="userForm" (ngSubmit)="submitForm()">
         
         <div class="form-group">
-            <label for="profile">Upload Profile:</label>
+            <label for="profile">Upload Profile: <span class="required">*</span></label>
             <div class="file-upload-container">
                 <div class="upload-circle" *ngIf="!selectedProfileFile">
                     <input type="file" id="profile" (change)="onProfileSelected($event)" accept="image/*" />
                     <mat-icon class="upload-icon">cloud_upload</mat-icon>
                     <span class="circle-text">Upload Profile Image</span>
                 </div>
-                <div class="file-selected" *ngIf="selectedProfileFile && !profileImageUrl">
-                    <div class="file-info">
-                        <mat-icon>description</mat-icon>
-                        <span>{{ getProfileFileName() }}</span>
-                        <button type="button" class="remove-btn" (click)="removeProfile()">
-                            <mat-icon>close</mat-icon>
-                        </button>
-                    </div>
+                <div *ngIf="hasError('profile')" class="error-message">
+                    {{ getErrorMessage('profile') }}
                 </div>
                 <div class="image-preview" *ngIf="profileImageUrl">
                     <img [src]="profileImageUrl" alt="Profile Preview"
@@ -153,12 +147,15 @@
 
    
         <div class="form-group">
-            <label for="kyc">Upload Document:</label>
+            <label for="kyc">Upload Document: <span class="required">*</span></label>
             <div class="file-upload-container">
                 <div class="upload-circle" *ngIf="!selectedKycFile">
                     <input type="file" id="kyc" (change)="onKycSelected($event)" accept=".pdf,.jpg,.jpeg,.png" />
                     <mat-icon class="upload-icon">cloud_upload</mat-icon>
                     <span class="circle-text">Upload Document</span>
+                </div>
+                <div *ngIf="hasError('kyc')" class="error-message">
+                    {{ getErrorMessage('kyc') }}
                 </div>
                 <div class="file-selected" *ngIf="selectedKycFile && !kycDocumentUrl">
                     <div class="file-info">
@@ -169,13 +166,13 @@
                         </button>
                     </div>
                 </div>
-                <div class="image-preview" *ngIf="kycDocumentUrl">
+                <!-- <div class="image-preview" *ngIf="kycDocumentUrl">
                     <img [src]="kycDocumentUrl" alt="Document Preview" class="preview-image" />
                     <button type="button" class="remove-btn-overlay" (click)="removeKyc()">
                         <mat-icon>close</mat-icon>
                     </button>
                     <div class="image-name">{{ getKycFileName() }}</div>
-                </div>
+                </div> -->
                 <small class="file-info">Supported formats: PDF, JPG, JPEG, PNG (Max 1MB)</small>
             </div>
         </div>

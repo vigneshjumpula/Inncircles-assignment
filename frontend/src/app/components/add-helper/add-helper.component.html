@@ -3,7 +3,12 @@
     <button (click)="backToHelper()" class="back-button">
       <img src="assets/left.png" alt="Back" class="back-icon" />
     </button>
-    <h1 class="page-title">Add Helper</h1>
+    <div *ngIf="!isEditMode">
+    <h1 class="page-title" >Add Helper</h1>
+    </div>
+    <div *ngIf="isEditMode">
+      <h1 class="page-title">Edit Helper</h1>
+    </div>
   </div>
   
   <div class="main-content">

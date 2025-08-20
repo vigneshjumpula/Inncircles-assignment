@@ -14,7 +14,7 @@ import {Helper} from '../../models/helper.interface';
   styleUrls: ['./form.component.scss']
 })
 
-export class FormComponent implements OnInit {
+export class FormComponent{
     userForm: FormGroup;
     formSubmitted = false;
     isLanguagesDropdownOpen = false;
@@ -52,6 +52,7 @@ export class FormComponent implements OnInit {
             if (helperId && this.helperDetailsService.getEditMode()) {
                 this.loadHelperForEdit(helperId);
             } else {
+                // Check for cached details when returning from document page
                 const cachedDetails = this.helperDetailsService.getHelperDetails();
                 if (cachedDetails) {
                     this.loadHelperData(cachedDetails);
@@ -69,15 +70,6 @@ export class FormComponent implements OnInit {
         
         if (helperDetails) {
             this.loadHelperData(helperDetails);
-        } else {
-            this.helperDetailsService.loadHelpers().subscribe({
-                next: () => {
-                    helperDetails = this.helperDetailsService.getHelperById(helperId);
-                    if (helperDetails) {
-                        this.loadHelperData(helperDetails);
-                    }
-                }
-            });
         }
     }
 
@@ -163,7 +155,7 @@ export class FormComponent implements OnInit {
         this.formSubmitted = true;
         if (this.userForm.valid) {
             if (this.selectedImage) {
-                this.userForm.patchValue({ profile: this.selectedImage });
+                this.userForm.patchValue({ profile: this.selectedProfileFile});
             } else {
                 this.userForm.patchValue({ profile: '' });
             }

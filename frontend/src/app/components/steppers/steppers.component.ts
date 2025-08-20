@@ -19,7 +19,7 @@ import { Subscription, filter } from 'rxjs';
   templateUrl: './steppers.component.html',
   styleUrl: './steppers.component.scss'
 })
-export class SteppersComponent implements OnInit, OnDestroy, AfterViewInit {
+export class SteppersComponent  {
   @ViewChild('stepper') stepper!: MatStepper;
   
   currentStep = 0;
@@ -111,30 +111,39 @@ export class SteppersComponent implements OnInit, OnDestroy, AfterViewInit {
   private updateStepFromRoute() {
     const currentUrl = this.router.url;
     
-    
-    this.steps.forEach(step => {
+    // Reset all steps
+    this.steps.forEach((step, index) => {
       step.active = false;
       step.completed = false;
     });
 
-
     if (currentUrl.includes('/form')) {
       this.currentStep = 0;
       this.steps[0].active = true;
+      
+      // In add mode, mark previous steps as completed based on progress
+      if (!this.isEditMode) {
+        // Form step is currently active, no previous steps to complete
+      }
     } else if (currentUrl.includes('/document')) {
       this.currentStep = 1;
       this.steps[1].active = true;
-      this.steps[0].completed = this.isFormValid();
+      
+      // In add mode, mark form as completed if we're on document step
+      if (!this.isEditMode) {
+        this.steps[0].completed = this.isFormValid();
+      }
     } else if (currentUrl.includes('/review') && !this.isEditMode) {
-  
       this.currentStep = 2;
       this.steps[2].active = true;
+      
+      // Mark previous steps as completed
       this.steps[0].completed = this.isFormValid();
-      this.steps[1].completed = true; 
+      this.steps[1].completed = true; // Document step is optional but considered completed
     }
     
-   
-    if (this.stepper) {
+    // Update stepper only in add mode
+    if (this.stepper && !this.isEditMode) {
       this.stepper.selectedIndex = this.currentStep;
     }
   }
@@ -153,7 +162,9 @@ export class SteppersComponent implements OnInit, OnDestroy, AfterViewInit {
       'languages',
       'type_of_service',
       'organization_name',
-      'choose_vehicle'
+      'choose_vehicle',
+      'profile',
+      'kyc_document'
     ];
   
     return requiredFields.every(field => {

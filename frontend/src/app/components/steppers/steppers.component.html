@@ -1,5 +1,6 @@
 <div class="stepper-container">
-  <div class="stepper-layout">
+  <!-- Add Mode: Material Stepper -->
+  <div class="stepper-layout" *ngIf="!isEditMode">
     <mat-stepper 
       #stepper 
       [selectedIndex]="currentStep" 
@@ -7,9 +8,7 @@
       [linear]="true"
       (selectionChange)="onStepClick($event)">
       
-     
       <mat-step 
-        *ngIf="!isEditMode"
         [completed]="steps[0].completed"
         [editable]="true">
         <ng-template matStepLabel>Helper Details</ng-template>
@@ -17,7 +16,6 @@
       </mat-step>
       
       <mat-step 
-        *ngIf="!isEditMode"
         [completed]="steps[1].completed"
         [editable]="canNavigateToStep(1)">
         <ng-template matStepLabel>Document Upload</ng-template>
@@ -25,30 +23,29 @@
       </mat-step>
       
       <mat-step
-        *ngIf="!isEditMode"
         [completed]="steps[2].completed"
         [editable]="canNavigateToStep(2)">
         <ng-template matStepLabel>Review & Submit</ng-template>
         <div>Review all details before submission</div>
       </mat-step>
-      
-
-      <mat-step 
-        *ngIf="isEditMode"
-        [completed]="steps[0].completed"
-        [editable]="true">
-        <ng-template matStepLabel>Helper Details</ng-template>
-        <div>Edit helper personal and service details</div>
-      </mat-step>
-
-      <mat-step 
-        *ngIf="isEditMode"
-        [completed]="steps[1].completed"
-        [editable]="true">
-        <ng-template matStepLabel>Documents</ng-template>
-        <div>Edit required documents (Optional)</div>
-      </mat-step>
     </mat-stepper>
+  </div>
+
+  <!-- Edit Mode: Custom Navigation -->
+  <div class="edit-navigation" *ngIf="isEditMode">
+    <div class="nav-item" 
+         [class.active]="currentStep === 0" 
+         (click)="navigateToStep(0)">
+      <mat-icon>person</mat-icon>
+      <span>Helper Details</span>
+    </div>
+    
+    <div class="nav-item" 
+         [class.active]="currentStep === 1" 
+         (click)="navigateToStep(1)">
+      <mat-icon>description</mat-icon>
+      <span>Documents</span>
+    </div>
   </div>
 </div>
 

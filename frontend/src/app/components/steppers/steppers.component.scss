@@ -79,3 +79,36 @@ mat-stepper {
   height: 24px;
   width: 24px;
 }
+
+
+.edit-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 0;
+  
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #f8f9fa;
+    
+    mat-icon {
+      font-size: 20px;
+      color: #6c757d;
+    }
+    
+    span {
+      font-size: 14px;
+      font-weight: 500;
+      color: #495057;
+    }
+    
+    &.active {
+      background-color: #e0e0e0;
+    }
+  }
+}
