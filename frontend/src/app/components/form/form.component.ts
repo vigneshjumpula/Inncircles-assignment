@@ -4,8 +4,8 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { HelperDetailsService } from '../../services/helper-details.service'; 
-import { profile } from 'console';
 import {Helper} from '../../models/helper.interface';
+
 @Component({
   selector: 'app-form',
   standalone: true,
@@ -52,7 +52,6 @@ export class FormComponent{
             if (helperId && this.helperDetailsService.getEditMode()) {
                 this.loadHelperForEdit(helperId);
             } else {
-                // Check for cached details when returning from document page
                 const cachedDetails = this.helperDetailsService.getHelperDetails();
                 if (cachedDetails) {
                     this.loadHelperData(cachedDetails);

@@ -12,7 +12,7 @@ import { Helper } from '../../models/helper.interface';
   styleUrls: ['./left.component.scss']
 })
 
-export class LeftComponent implements OnInit {
+export class LeftComponent{
   helpers = computed(() => this.helperDetailsService.getFilter());
   selectedHelperId: string | null = null;
 

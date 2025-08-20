@@ -203,9 +203,6 @@ export class HelperDetailsService {
   }
 
   deleteHelper(id: string): Observable<Helper> {
-    console.log("deleteHelper called with ID:", id);
-    console.log("ID type:", typeof id);
-    console.log("ID length:", id.length);
     return this.http.delete<Helper>(`http://localhost:3000/api/helpers/${id}`)
       .pipe(
         tap(() => {
