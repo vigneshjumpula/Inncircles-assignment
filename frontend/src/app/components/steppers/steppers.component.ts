@@ -120,16 +120,13 @@ export class SteppersComponent  {
     if (currentUrl.includes('/form')) {
       this.currentStep = 0;
       this.steps[0].active = true;
-      
-      // In add mode, mark previous steps as completed based on progress
       if (!this.isEditMode) {
-        // Form step is currently active, no previous steps to complete
       }
     } else if (currentUrl.includes('/document')) {
       this.currentStep = 1;
       this.steps[1].active = true;
       
-      // In add mode, mark form as completed if we're on document step
+      
       if (!this.isEditMode) {
         this.steps[0].completed = this.isFormValid();
       }
@@ -137,12 +134,11 @@ export class SteppersComponent  {
       this.currentStep = 2;
       this.steps[2].active = true;
       
-      // Mark previous steps as completed
+     
       this.steps[0].completed = this.isFormValid();
       this.steps[1].completed = true; // Document step is optional but considered completed
     }
-    
-    // Update stepper only in add mode
+
     if (this.stepper && !this.isEditMode) {
       this.stepper.selectedIndex = this.currentStep;
     }

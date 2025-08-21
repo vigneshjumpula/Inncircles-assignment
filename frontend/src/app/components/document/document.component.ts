@@ -22,7 +22,7 @@ export class DocumentComponent implements OnInit {
     this.isEditMode = this.helperDetailsService.getEditMode();
     
     if (this.isEditMode) {
-      // In edit mode, get document from helper data
+      
       const helperId = this.helperDetailsService.getEditingHelperId();
       if (helperId) {
         const helperData = this.helperDetailsService.getHelperById(helperId);
@@ -31,7 +31,6 @@ export class DocumentComponent implements OnInit {
         }
       }
     } else {
-      // In add mode, get document from cached service
       const cachedDocument = this.helperDetailsService.getDocument();
       if (cachedDocument) {
         this.document = cachedDocument;
@@ -77,7 +76,13 @@ export class DocumentComponent implements OnInit {
   }
 
   submitDocument() {
-    this.helperDetailsService.setDocument(this.document);
+   
+    if (this.helperDetailsService.getEditMode() && (!this.document || this.document.size === 0)) {
+      this.helperDetailsService.setDocument(null);
+    } else {
+      this.helperDetailsService.setDocument(this.document);
+    }
+    
     console.log('Document submitted:', this.document ? 'Document uploaded' : 'No document uploaded');
     
 
@@ -115,7 +120,7 @@ export class DocumentComponent implements OnInit {
     if (file) {
       if (this.validateFile(file)) {
         this.document = file;
-        // Use FileReader for image preview
+       
         if (file.type.startsWith('image/')) {
           const reader = new FileReader();
           reader.onload = (e) => {
@@ -136,7 +141,7 @@ export class DocumentComponent implements OnInit {
       if (this.document.name && this.document.name !== '') {
         return this.document.name;
       }
-      // For files loaded from backend, extract filename from the original data
+ 
       if (this.isEditMode) {
         const helperId = this.helperDetailsService.getEditingHelperId();
         if (helperId) {

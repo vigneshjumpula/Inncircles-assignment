@@ -4,8 +4,8 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { HelperDetailsService } from '../../services/helper-details.service'; 
+import { profile } from 'console';
 import {Helper} from '../../models/helper.interface';
-
 @Component({
   selector: 'app-form',
   standalone: true,
@@ -52,6 +52,7 @@ export class FormComponent{
             if (helperId && this.helperDetailsService.getEditMode()) {
                 this.loadHelperForEdit(helperId);
             } else {
+                // Check for cached details when returning from document page
                 const cachedDetails = this.helperDetailsService.getHelperDetails();
                 if (cachedDetails) {
                     this.loadHelperData(cachedDetails);
@@ -153,16 +154,32 @@ export class FormComponent{
     submitForm() {
         this.formSubmitted = true;
         if (this.userForm.valid) {
-            if (this.selectedImage) {
-                this.userForm.patchValue({ profile: this.selectedProfileFile});
-            } else {
-                this.userForm.patchValue({ profile: '' });
-            }
+            if (this.helperDetailsService.getEditMode()) {
+                const currentHelper = this.helperDetailsService.getHelperById(this.helperDetailsService.getEditingHelperId()!);
+                
+                if (this.selectedImage && this.selectedImage.size > 0) {
+                    this.userForm.patchValue({ profile: this.selectedProfileFile});
+                } else if (currentHelper?.profile) {
+                    this.userForm.patchValue({ profile: currentHelper.profile });
+                }
 
-            if (this.selectedKycFile) {
-                this.userForm.patchValue({ kyc: this.selectedKycFile });
+                if (this.selectedKycFile && this.selectedKycFile.size > 0) {
+                    this.userForm.patchValue({ kyc: this.selectedKycFile });
+                } else if (currentHelper?.kyc) {
+                    this.userForm.patchValue({ kyc: currentHelper.kyc });
+                }
             } else {
-                this.userForm.patchValue({ kyc: '' });
+                if (this.selectedImage) {
+                    this.userForm.patchValue({ profile: this.selectedProfileFile});
+                } else {
+                    this.userForm.patchValue({ profile: '' });
+                }
+
+                if (this.selectedKycFile) {
+                    this.userForm.patchValue({ kyc: this.selectedKycFile });
+                } else {
+                    this.userForm.patchValue({ kyc: '' });
+                }
             }
 
             this.helperDetailsService.setHelperDetails(this.userForm.value);

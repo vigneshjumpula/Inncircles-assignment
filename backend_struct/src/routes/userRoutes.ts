@@ -84,6 +84,10 @@ router.put(
     try {
       const files = (req as MulterRequest).files;
 
+      // Get the existing user data first
+      const existingUser = await User.findById(req.params.id);
+      if (!existingUser) return res.status(404).json({ error: 'User not found' });
+
       let languages: string[] = [];
       if (req.body.languages) {
         try {
@@ -101,9 +105,24 @@ router.put(
         phone_number: Number(req.body.phone_number)
       };
 
-      if (files?.profile?.[0]) updateData.profile = files.profile[0].filename;
-      if (files?.kyc?.[0]) updateData.kyc = files.kyc[0].filename;
-      if (files?.document?.[0]) updateData.document = files.document[0].filename;
+     
+      if (files?.profile?.[0]) {
+        updateData.profile = files.profile[0].filename;
+      } else {
+        updateData.profile = existingUser.profile; 
+      }
+
+      if (files?.kyc?.[0]) {
+        updateData.kyc = files.kyc[0].filename;
+      } else {
+        updateData.kyc = existingUser.kyc; 
+      }
+
+      if (files?.document?.[0]) {
+        updateData.document = files.document[0].filename;
+      } else {
+        updateData.document = existingUser.document; 
+      }
 
       const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, {
         new: true,

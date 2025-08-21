@@ -11,7 +11,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 import { QrDialogComponent } from './qr-dialog.component';
 import { error } from 'console';
-
 @Component({
   selector: 'app-right',
   standalone: true,
@@ -35,8 +34,24 @@ export class RightComponent implements OnInit {
       
       if (id) {
         this.helper = this.helperDetailService.getHelperById(id) || null;
-        console.log('Right component - Helper found abc:', this.helper);
-      
+        console.log('Right component - Helper found:', this.helper);
+        if (!this.helper) {
+          console.log('Helper not found in cache, attempting to reload helpers...');
+          this.helperDetailService.loadHelpers().subscribe(
+            helpers => {
+              console.log('Helpers reloaded, trying to find helper again...');
+              this.helper = this.helperDetailService.getHelperById(id) || null;
+              if (this.helper) {
+                console.log('Helper found after reload:', this.helper);
+              } else {
+                console.error('Helper still not found after reload. ID:', id);
+              }
+            },
+            error => {
+              console.error('Error reloading helpers:', error);
+            }
+          );
+        }
       } else {
         console.error('No ID found in route parameters');
         this.helper = null;
@@ -103,7 +118,15 @@ export class RightComponent implements OnInit {
       let kycDocument = this.helper.kyc;
       console.log('KYC document value:', kycDocument);
       if (kycDocument) {
-        if (typeof kycDocument === 'string' && kycDocument.trim() !== '') {
+      
+        if (kycDocument instanceof File) {
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            const fileUrl = e.target.result;
+            window.open(fileUrl, '_blank');
+          };
+          reader.readAsDataURL(kycDocument);
+        } else if (typeof kycDocument === 'string' && kycDocument.trim() !== '') {
           
           let fileUrl = '';
           if (kycDocument.startsWith('http')) {
