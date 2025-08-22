@@ -3,6 +3,7 @@ import { Router, RouterModule } from '@angular/router';
 import { HelperDetailsService } from '../../services/helper-details.service';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-document',
@@ -16,7 +17,11 @@ export class DocumentComponent implements OnInit {
   isEditMode = false;
   documentUrl: string | null = null;
 
-  constructor(private router: Router, private helperDetailsService: HelperDetailsService) {}
+  constructor(
+    private router: Router, 
+    private helperDetailsService: HelperDetailsService,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit() {
     this.isEditMode = this.helperDetailsService.getEditMode();
@@ -85,17 +90,33 @@ export class DocumentComponent implements OnInit {
     
     console.log('Document submitted:', this.document ? 'Document uploaded' : 'No document uploaded');
     
+    // Mark document step as completed
+    this.helperDetailsService.markStepCompleted('document', true);
 
     if (this.helperDetailsService.getEditMode()) {
       this.helperDetailsService.addHelper().subscribe({
         next: (response) => {
           console.log('Helper updated successfully:', response);
+          
+          // Show success snackbar
+          this.snackBar.open('Changes saved successfully', 'Close', {
+            duration: 4000,
+            horizontalPosition: 'right',
+            verticalPosition: 'bottom',
+            panelClass: ['success-snackbar']
+          });
+          
           this.helperDetailsService.setEditMode(false);
           this.router.navigate(['/']);
         },
         error: (error) => {
           const errorMessage = error.error?.message || error.message || 'Unknown error occurred';
-          alert('Failed to update helper: ' + errorMessage);
+          this.snackBar.open('Failed to update helper: ' + errorMessage, 'Close', {
+            duration: 4000,
+            horizontalPosition: 'right',
+            verticalPosition: 'bottom',
+            panelClass: ['error-snackbar']
+          });
         }
       });
     } else {

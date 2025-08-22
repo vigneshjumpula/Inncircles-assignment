@@ -3,9 +3,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog } from '@angular/material/dialog';
 import { HelperDetailsService } from '../../services/helper-details.service'; 
 import { profile } from 'console';
 import {Helper} from '../../models/helper.interface';
+import { KycUploadDialogComponent, KycUploadResult } from './kyc-upload-dialog.component';
 @Component({
   selector: 'app-form',
   standalone: true,
@@ -19,7 +21,9 @@ export class FormComponent{
     formSubmitted = false;
     isLanguagesDropdownOpen = false;
     selectedLanguages: string[] = [];
+    availableLanguages: string[] = ['english', 'telugu', 'hindi'];
     selectedKycFile: File | null = null;
+    selectedKycDocumentType: string = '';
     selectedProfileFile: File | null = null;
     selectedImage: File | null = null;
     profileImageUrl: string | null = null;
@@ -29,7 +33,8 @@ export class FormComponent{
         private router: Router, 
         private formBuilder: FormBuilder, 
         private helperDetailsService: HelperDetailsService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        private dialog: MatDialog
     ) {
         this.userForm = this.formBuilder.group({
            profile: [null,Validators.required],
@@ -38,8 +43,8 @@ export class FormComponent{
            full_name: ['', [Validators.required, Validators.minLength(2)]],
            languages: ['', Validators.required],
            gender: ['', Validators.required],
-           phone_number: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-           email: ['', [Validators.required, Validators.email]],
+           phone_number: ['', [Validators.required, Validators.pattern('^[6-9][0-9]{9}$')]],
+           email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')]],
            choose_vehicle: ['', Validators.required],
            kyc: [null, Validators.required],
         });
@@ -183,6 +188,10 @@ export class FormComponent{
             }
 
             this.helperDetailsService.setHelperDetails(this.userForm.value);
+            
+            // Mark form step as completed
+            this.helperDetailsService.markStepCompleted('form', true);
+            
             if (this.helperDetailsService.getEditMode()) {
                 this.router.navigate(['/edit-helper/document']);
             } else {
@@ -196,6 +205,7 @@ export class FormComponent{
 
     removeKyc() {
         this.selectedKycFile = null;
+        this.selectedKycDocumentType = '';
         this.kycDocumentUrl = null;
         this.userForm.patchValue({ kyc: '' });
     }
@@ -232,6 +242,13 @@ export class FormComponent{
   
     hasError(fieldName: string): boolean {
         const field = this.userForm.get(fieldName);
+        
+        // Special handling for phone_number - only show errors after user leaves the field
+        if (fieldName === 'phone_number') {
+            return !!(field && field.invalid && (field.touched || this.formSubmitted));
+        }
+        
+        // Default behavior for other fields
         return !!(field && field.invalid && (field.dirty || field.touched || this.formSubmitted));
     }
 
@@ -246,7 +263,10 @@ export class FormComponent{
             }
             if (field.errors['pattern']) {
                 if (fieldName === 'phone_number') {
-                    return 'Please enter a valid 10-digit phone number';
+                    return 'Please enter a valid phone number';
+                }
+                if (fieldName === 'email') {
+                    return 'Please enter a valid email address (e.g., user@example.com)';
                 }
             }
             if (field.errors['minlength']) {
@@ -302,7 +322,35 @@ export class FormComponent{
         if (this.selectedLanguages.length === 1) {
             return this.selectedLanguages[0].charAt(0).toUpperCase() + this.selectedLanguages[0].slice(1);
         }
+        if (this.selectedLanguages.length === this.availableLanguages.length) {
+            return 'All languages selected';
+        }
         return `${this.selectedLanguages.length} languages selected`;
+    }
+
+    // Select All functionality
+    toggleSelectAll() {
+        if (this.areAllLanguagesSelected()) {
+            // Deselect all
+            this.selectedLanguages = [];
+        } else {
+            // Select all
+            this.selectedLanguages = [...this.availableLanguages];
+        }
+        
+        // Update form control
+        this.userForm.patchValue({
+            languages: this.selectedLanguages.join(', ')
+        });
+    }
+
+    areAllLanguagesSelected(): boolean {
+        return this.selectedLanguages.length === this.availableLanguages.length &&
+               this.availableLanguages.every(lang => this.selectedLanguages.includes(lang));
+    }
+
+    areSomeLanguagesSelected(): boolean {
+        return this.selectedLanguages.length > 0 && !this.areAllLanguagesSelected();
     }
 
     onProfileSelected(event: Event) {
@@ -325,26 +373,33 @@ export class FormComponent{
         }
     }
 
-    onKycSelected(event: Event) {
-        const input = event.target as HTMLInputElement;
-        if (input.files && input.files.length > 0) {
-            const file = input.files[0];
-            this.selectedKycFile = file;
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.kycDocumentUrl = e.target?.result as string;
-                };
-                reader.readAsDataURL(file);
-            } else {
+    openKycUploadDialog() {
+        const dialogRef = this.dialog.open(KycUploadDialogComponent, {
+            width: '550px',
+            data: {
+                existingDocument: this.selectedKycFile,
+                existingDocumentType: this.selectedKycDocumentType
+            },
+            disableClose: true
+        });
+
+        dialogRef.afterClosed().subscribe((result: KycUploadResult | null) => {
+            if (result) {
+                this.selectedKycFile = result.file;
+                this.selectedKycDocumentType = result.documentType;
+                
+                // Update form control
+                this.userForm.patchValue({ kyc: result.file });
+                
+                // Since we only accept PDFs, no image preview needed
                 this.kycDocumentUrl = null;
             }
-            
-            this.userForm.patchValue({ kyc: file });
-        } else {
-            this.selectedKycFile = null;
-            this.kycDocumentUrl = null;
-        }
+        });
+    }
+
+    onKycSelected(event: Event) {
+        // This method is now replaced by the dialog
+        this.openKycUploadDialog();
     }
 }
 

@@ -47,6 +47,21 @@ mat-stepper {
   font-weight: 600 !important;
 }
 
+// Completed steps that are not currently selected
+::ng-deep .mat-step-header.mat-step-header-completed:not(.mat-step-header-selected) .mat-step-icon {
+  background-color: #4caf50 !important;
+  color: white !important;
+}
+
+::ng-deep .mat-step-header.mat-step-header-completed:not(.mat-step-header-selected) .mat-step-label {
+  color: #4caf50 !important;
+  font-weight: 600 !important;
+}
+
+::ng-deep .mat-step-header.mat-step-header-completed:not(.mat-step-header-selected) {
+  background-color: #e8f5e8 !important;
+  border-left: 4px solid #4caf50 !important;
+}
 
 ::ng-deep .mat-step-header.mat-step-header-selected.mat-step-header-completed .mat-step-icon {
   background-color: #4caf50 !important;

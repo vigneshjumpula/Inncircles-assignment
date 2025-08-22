@@ -9,7 +9,9 @@ import { Helper } from '../../models/helper.interface';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { QrDialogComponent } from './qr-dialog.component';
+import { DeleteConfirmationDialogComponent } from './delete-confirmation-dialog.component';
 import { error } from 'console';
 @Component({
   selector: 'app-right',
@@ -24,7 +26,8 @@ export class RightComponent implements OnInit {
     private route: ActivatedRoute,
     private helperDetailService: HelperDetailsService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {}
   
   ngOnInit() {
@@ -150,21 +153,47 @@ export class RightComponent implements OnInit {
     if (this.helper && this.helper._id) {
       const id = this.helper._id;
       const helperName = this.helper.full_name;
+      const helperRole = this.helper.type_of_service;
       
-      
-      if (confirm(`Are you sure you want to delete ${helperName}?`)) {
-        console.log('Deleting helper with ID:', id);
-        
-        this.helperDetailService.deleteHelper(id).subscribe({
-          next: () => {
-            this.router.navigate(['/main']);
-            this.helperDetailService.refreshHelpers().subscribe();
-          },
-          error: (error) => {
-            alert('Failed to delete helper: ' + error.message);
-          }
-        });
-      }
+      // Open delete confirmation dialog
+      const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+        data: {
+          helperName: helperName,
+          helperRole: helperRole
+        },
+        width: '450px',
+        disableClose: true
+      });
+
+      dialogRef.afterClosed().subscribe(result => {
+        if (result === true) {
+          console.log('Deleting helper with ID:', id);
+          
+          this.helperDetailService.deleteHelper(id).subscribe({
+            next: () => {
+              // Show success snackbar with helper's name
+              this.snackBar.open(`${helperName} deleted!`, 'Close', {
+                duration: 4000,
+                horizontalPosition: 'right',
+                verticalPosition: 'bottom',
+                panelClass: ['success-snackbar']
+              });
+              
+              this.router.navigate(['/main']);
+              this.helperDetailService.refreshHelpers().subscribe();
+            },
+            error: (error) => {
+              // Show error snackbar instead of alert
+              this.snackBar.open('Failed to delete helper: ' + error.message, 'Close', {
+                duration: 4000,
+                horizontalPosition: 'right',
+                verticalPosition: 'bottom',
+                panelClass: ['error-snackbar']
+              });
+            }
+          });
+        }
+      });
     } else {
       console.error('No helper selected for deletion');
     }

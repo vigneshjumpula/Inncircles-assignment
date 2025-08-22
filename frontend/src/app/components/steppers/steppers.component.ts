@@ -87,6 +87,12 @@ export class SteppersComponent  {
     ).subscribe(() => {
       this.detectModeFromRoute();
       this.updateStepFromRoute();
+      // Trigger change detection to refresh the stepper
+      setTimeout(() => {
+        if (this.stepper && !this.isEditMode) {
+          this.stepper.selectedIndex = this.currentStep;
+        }
+      }, 0);
     });
   }
 
@@ -111,32 +117,41 @@ export class SteppersComponent  {
   private updateStepFromRoute() {
     const currentUrl = this.router.url;
     
-    // Reset all steps
+    // Reset active state but preserve completion state
     this.steps.forEach((step, index) => {
       step.active = false;
-      step.completed = false;
     });
 
     if (currentUrl.includes('/form')) {
       this.currentStep = 0;
       this.steps[0].active = true;
-      if (!this.isEditMode) {
-      }
+      // Don't reset completion status when going back to form
     } else if (currentUrl.includes('/document')) {
       this.currentStep = 1;
       this.steps[1].active = true;
       
+      // Mark form step as completed when moving to document step
+      // Use both service completion status and form validation
+      const isFormValid = this.isFormValid();
+      const isMarkedComplete = this.helperDetailsService.isStepCompleted('form');
       
       if (!this.isEditMode) {
-        this.steps[0].completed = this.isFormValid();
+        this.steps[0].completed = isFormValid || isMarkedComplete;
+      } else {
+        // In edit mode, also mark form step as completed if valid or marked complete
+        this.steps[0].completed = isFormValid || isMarkedComplete;
       }
     } else if (currentUrl.includes('/review') && !this.isEditMode) {
       this.currentStep = 2;
       this.steps[2].active = true;
       
-     
-      this.steps[0].completed = this.isFormValid();
-      this.steps[1].completed = true; // Document step is optional but considered completed
+      // Mark previous steps as completed
+      const isFormValid = this.isFormValid();
+      const isFormMarkedComplete = this.helperDetailsService.isStepCompleted('form');
+      const isDocumentMarkedComplete = this.helperDetailsService.isStepCompleted('document');
+      
+      this.steps[0].completed = isFormValid || isFormMarkedComplete;
+      this.steps[1].completed = true || isDocumentMarkedComplete; // Document step is optional but considered completed
     }
 
     if (this.stepper && !this.isEditMode) {

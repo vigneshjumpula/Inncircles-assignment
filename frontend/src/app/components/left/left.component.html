@@ -11,13 +11,12 @@
       <div class="helper-avatar">
         <div
           class="avatar-placeholder">
-         <img src="{{ getImgUrl(helper) }}" alt="" style="width: 60px; height: 60px; border-radius: 50%; object-fit: fill; "> 
+         <img src="{{ getImgUrl(helper) }}" alt="" style="width: 60px !important; height: 60px !important; min-width: 60px; min-height: 60px; max-width: 60px; max-height: 60px; border-radius: 50%; object-fit: cover; display: block;"> 
         </div>
       </div>
       <div class="helper-info">
         <h3 class="helper-name">{{ helper.full_name }}</h3>
         <p class="helper-role">{{ helper.type_of_service }}</p>
-        <p class="helper-duration">{{ getJoinedDuration(helper.joined_date) }}</p>
       </div>
       <div class="helper-extra">
         <p class="helper-stat">{{ helper.households || 0 }} Households</p>

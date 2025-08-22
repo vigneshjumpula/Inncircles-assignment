@@ -17,6 +17,11 @@ export class AddHelperComponent {
   constructor(private router: Router, private helperDetailsService: HelperDetailsService) {
     this.isEditMode = this.helperDetailsService.getEditMode();
     console.log('Edit mode:', this.isEditMode);
+    
+    // Reset step completion when starting a new helper addition (not in edit mode)
+    if (!this.isEditMode) {
+      this.helperDetailsService.resetStepCompletion();
+    }
   }
 
   backToHelper(): void {

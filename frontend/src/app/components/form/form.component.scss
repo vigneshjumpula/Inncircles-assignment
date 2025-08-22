@@ -92,6 +92,18 @@ input, select {
     font-size: 12px;
     margin-top: 4px;
   }
+
+  .file-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    
+    .document-type {
+      color: #6b7280;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+  }
   
   .upload-circle {
     width: 120px;
@@ -244,11 +256,25 @@ select.ng-invalid.ng-touched {
         &:hover {
           background: #f8f9fa;
         }
-        
+
         input[type="checkbox"] {
           width: auto;
           margin-right: 8px;
           margin-bottom: 0;
+          
+          &:indeterminate {
+            background-color: #007bff;
+            border-color: #007bff;
+            
+            &::after {
+              content: '';
+              display: block;
+              width: 6px;
+              height: 2px;
+              background: white;
+              margin: 3px auto;
+            }
+          }
         }
         
         label {
@@ -256,6 +282,12 @@ select.ng-invalid.ng-touched {
           cursor: pointer;
           font-weight: normal;
         }
+      }
+
+      .language-divider {
+        height: 1px;
+        background: #e9ecef;
+        margin: 4px 0;
       }
     }
   }

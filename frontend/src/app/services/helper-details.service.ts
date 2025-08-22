@@ -16,6 +16,13 @@ export class HelperDetailsService {
   private editingHelperId: string | null = null;
   perDetails: Helper | null = null;
   Document: File | null = null;
+  
+  // Step completion tracking
+  private stepCompletionStatus = {
+    formCompleted: false,
+    documentCompleted: false,
+    reviewCompleted: false
+  };
 
   constructor(private http: HttpClient) {
     this.loadHelpers().subscribe({
@@ -77,6 +84,8 @@ export class HelperDetailsService {
     if (!isEdit) {
       this.perDetails = null;
       this.editingHelperId = null;
+      // Reset step completion when exiting edit mode
+      this.resetStepCompletion();
     }
   }
 
@@ -142,6 +151,7 @@ export class HelperDetailsService {
         catchError(error => throwError(() => error))
       );
   }
+  
   updateHelper(): Observable<Helper> {
     if (!this.editingHelperId) {
       console.error('No editing helper ID available');
@@ -221,5 +231,41 @@ export class HelperDetailsService {
 
   refreshHelpers(): Observable<Helper[]> {
     return this.loadHelpers();
+  }
+
+  
+  markStepCompleted(step: 'form' | 'document' | 'review', completed: boolean = true): void {
+    switch (step) {
+      case 'form':
+        this.stepCompletionStatus.formCompleted = completed;
+        break;
+      case 'document':
+        this.stepCompletionStatus.documentCompleted = completed;
+        break;
+      case 'review':
+        this.stepCompletionStatus.reviewCompleted = completed;
+        break;
+    }
+  }
+
+  isStepCompleted(step: 'form' | 'document' | 'review'): boolean {
+    switch (step) {
+      case 'form':
+        return this.stepCompletionStatus.formCompleted;
+      case 'document':
+        return this.stepCompletionStatus.documentCompleted;
+      case 'review':
+        return this.stepCompletionStatus.reviewCompleted;
+      default:
+        return false;
+    }
+  }
+
+  resetStepCompletion(): void {
+    this.stepCompletionStatus = {
+      formCompleted: false,
+      documentCompleted: false,
+      reviewCompleted: false
+    };
   }
 }

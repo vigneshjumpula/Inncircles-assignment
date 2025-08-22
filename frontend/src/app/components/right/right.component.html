@@ -23,60 +23,65 @@
 
   <div class="details-content">
    
-    <h1 class="main-section-heading">EMPLOYEE ID</h1>
+    <h1 class="main-section-heading" style="display: flex; align-items: center;">EMPLOYEE ID <hr style="margin-left: 10px; flex-grow: 1; border: none; border-top: 1px solid #ccc;"></h1>
     <div class="details-col">
       <div class="detail-item">
-        <span class="detail-label">EMPLOYEE ID :</span>
-        <span class="detail-value">{{ helper.employee_code || '-' }}</span>
+        <span class="detail-label">Identification Card</span>
+        <span class="detail-value view-link" (click)="openQrDialog()">
+          <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#2854C5"><path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z"/></svg>
+           View</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">IDENTIFICATION CARD :</span>
-        <span class="detail-value view-link" (click)="openQrDialog()">🔗 View</span>
+        <span class="detail-label">Employee Code </span>
+        <span class="detail-value">{{ helper.employee_code || '-' }}</span>
       </div>
     </div>
 
 
-    <h1 class="main-section-heading">PERSONAL DETAILS</h1>
+    <h1 class="main-section-heading" style="display: flex; align-items: center;">PERSONAL DETAILS <hr style="margin-left: 10px; flex-grow: 1; border: none; border-top: 1px solid #ccc;"></h1>
     <div class="details-col">
       <div class="detail-item">
-        <span class="detail-label">Gender :</span>
+        <span class="detail-label">Gender </span>
         <span class="detail-value">{{ helper.gender | titlecase }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Language(s) :</span>
+        <span class="detail-label">Language(s) </span>
         <span class="detail-value">{{ getLanguagesDisplay() | titlecase }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Mobile No :</span>
+        <span class="detail-label">Mobile No </span>
         <span class="detail-value">{{ helper.phone_number}}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Email ID :</span>
+        <span class="detail-label">Email ID </span>
         <span class="detail-value">{{ helper.email}}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">KYC DOCUMENT :</span>
-        <span class="detail-value view-link" (click)="openKycDocument()">🔗 View</span>
+        <span class="detail-label">KYC DOCUMENT </span>
+        <span class="detail-value view-link" (click)="openKycDocument()">
+          <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="24px" fill="#2854C5"><path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-146 0-266-81.5T40-500q54-137 174-218.5T480-800q146 0 266 81.5T920-500q-54 137-174 218.5T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z"/></svg>
+           View
+          </span>
       </div>
     </div>
 
     
-    <h1 class="main-section-heading">SERVICE DETAILS</h1>
+    <h1 class="main-section-heading" style="display: flex; align-items: center;">SERVICE DETAILS <hr style="margin-left: 10px; flex-grow: 1; border: none; border-top: 1px solid #ccc;"></h1>
     <div class="details-col">
       <div class="detail-item">
-        <span class="detail-label">Type :</span>
+        <span class="detail-label">Type </span>
         <span class="detail-value">{{ helper.type_of_service  | titlecase }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Organization :</span>
+        <span class="detail-label">Organization </span>
         <span class="detail-value">{{ helper.organization_name | titlecase }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Joined On :</span>
+        <span class="detail-label">Joined On </span>
         <span class="detail-value">{{ helper.joined_date | date: 'mediumDate' }}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Vehicle :</span>
+        <span class="detail-label">Vehicle </span>
         <span class="detail-value">{{ helper.choose_vehicle | titlecase}}</span>
       </div>
     </div>

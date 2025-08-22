@@ -3,6 +3,9 @@ import { Router, RouterModule } from '@angular/router';
 import { HelperDetailsService } from '../../services/helper-details.service'; 
 import { CommonModule } from '@angular/common';
 import { Helper } from '../../models/helper.interface';
+import { MatDialog } from '@angular/material/dialog';
+import { SuccessDialogComponent } from '../success-dialog/success-dialog.component';
+import { QrDialogComponent } from '../right/qr-dialog.component';
 
 
 @Component({
@@ -13,7 +16,11 @@ import { Helper } from '../../models/helper.interface';
   styleUrls: ['./review.component.scss']
 })
 export class ReviewComponent implements OnInit {
-    constructor(private router: Router, private helperDetailsService: HelperDetailsService) {}
+    constructor(
+      private router: Router, 
+      private helperDetailsService: HelperDetailsService,
+      private dialog: MatDialog
+    ) {}
     formDetails: Helper | null = null;
     documentDetails: File | null = null;
     profileImageUrl: string | null = null;
@@ -72,7 +79,41 @@ export class ReviewComponent implements OnInit {
       this.helperDetailsService.addHelper().subscribe({
         next: (response) => {
           console.log('Helper added successfully:', response);
-          this.router.navigate(['/']);
+          
+          // Get helper name for the dialog
+          const helperName = this.formDetails?.full_name || 'Helper';
+          
+          // Show success dialog first
+          const successDialogRef = this.dialog.open(SuccessDialogComponent, {
+            width: '400px',
+            data: {
+              title: `${helperName} added!`,
+              message: 'The helper has been successfully added to your system.',
+              actionButtonText: 'View ID Card'
+            },
+            disableClose: true
+          });
+
+          successDialogRef.afterClosed().subscribe(() => {
+            // Show ID card dialog after success dialog closes
+            const idCardDialogRef = this.dialog.open(QrDialogComponent, {
+              width: '500px',
+              maxWidth: '90vw',
+              data: {
+                helper: {
+                  ...this.formDetails,
+                  employee_code: response['helper']?.employee_code || response['employee_code'] || 'EMP001',
+                  profile: this.profileImageUrl
+                },
+                qrCodeUrl: this.generateQRCodeUrl()
+              },
+              disableClose: false
+            });
+
+            idCardDialogRef.afterClosed().subscribe(() => {
+              this.router.navigate(['/']);
+            });
+          });
         },
         error: (error) => {
           console.error('Error adding helper:', error);
@@ -106,5 +147,21 @@ export class ReviewComponent implements OnInit {
       return Array.isArray(this.formDetails.languages) ? 
         this.formDetails.languages.join(', ') : 
         this.formDetails.languages;
+    }
+
+    generateQRCodeUrl(): string {
+      // Create QR code data with helper information
+      const qrData = {
+        name: this.formDetails?.full_name || '',
+        id: 'EMP001',
+        service: this.formDetails?.type_of_service || '',
+        organization: this.formDetails?.organization_name || '',
+        phone: this.formDetails?.phone_number || ''
+      };
+      
+      // For now, return a simple QR code placeholder
+      // In a real app, you would use a QR code library like qrcode.js
+      const qrText = `${qrData.name} - ${qrData.service} - ${qrData.organization}`;
+      return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrText)}`;
     }
 }

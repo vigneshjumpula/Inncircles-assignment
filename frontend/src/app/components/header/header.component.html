@@ -1,5 +1,7 @@
 <div class="header-container">
-  <h1>Helpers</h1>
+ 
+    <h1>Helpers</h1>
+
   <div class="header-row">
     <div class="header-left">
       <div class="sort-button-container">
@@ -7,59 +9,178 @@
           <img src="assets/arrow.png" alt="sort icon" />
         </button>
         <div class="sort-dropdown-container" *ngIf="visibleSort">
-          <mat-form-field class="sort-form-field">
-            <mat-label>Sort Options</mat-label>
-            <mat-select [(value)]="selectedSort" (selectionChange)="onSortChange($event.value)">
-              @for (option of sortOptions; track option.value) {
-                <mat-option [value]="option.value">{{option.viewValue}}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+          <div class="sort-header">
+            Sort by
+          </div>
+          <div class="sort-options">
+            @for (option of sortOptions; track option.value) {
+              <div class="sort-option-item" 
+                   [class.selected]="selectedSort === option.value"
+                   (click)="onSortOptionSelect(option.value, false)">
+                <span class="sort-option-text">{{option.viewValue}}</span>
+                <span class="sort-option-check" *ngIf="selectedSort === option.value"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#8B7DBE"><path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"/></svg></span>
+              </div>
+            }
+          </div>
         </div>
       </div>
       
       <div class="filter-button-container">
         <button class="action-button" (click)="toggleFilter()">
           <img src="assets/filter.png" alt="filter icon" />
+          <div class="filter-indicator-dot" *ngIf="hasActiveFilters()"></div>
         </button>
   
         <div class="filter-dropdown-container" *ngIf="visibleFilter">
           <div class="filter-header">
-            Filter By
+            <span>Filter By</span>
           </div>
           
-        
           <div class="filter-section">
-            <label class="filter-label">Service</label>
-            <div class="checkbox-group">
-              @for (service of serviceOptions; track service) {
-                <label class="checkbox-item">
-                  <input type="checkbox" [value]="service" (change)="onServiceFilterChange($event)" [checked]="selectedServices.includes(service)">
-                  <span>{{service}}</span>
-                </label>
-              }
+            <div class="filter-label-container">
+              <label class="filter-label">Service</label>
+              <button class="filter-section-reset" *ngIf="selectedServices.length > 0" (click)="resetServiceFilter(); $event.stopPropagation(); $event.preventDefault()">Reset</button>
+            </div>
+            <div class="filter-select-container service-multiselect">
+              <div class="multiselect-dropdown" [class.open]="serviceDropdownOpen" (click)="toggleServiceDropdown()">
+                <div class="multiselect-display">
+                  <span *ngIf="selectedServices.length === 0" class="placeholder">Select Service</span>
+                  <span *ngIf="selectedServices.length > 0" class="selected-count">{{selectedServices.length}} selected</span>
+                </div>
+                <div class="multiselect-arrow">
+                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                    <path d="M1 1.5L6 6.5L11 1.5" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="multiselect-options" *ngIf="serviceDropdownOpen">
+                <div class="multiselect-search">
+                  <input 
+                    type="text" 
+                    placeholder="Search services..." 
+                    [(ngModel)]="serviceSearchText"
+                    (input)="filterServices()"
+                    class="multiselect-search-input"
+                    (click)="$event.stopPropagation()"
+                  />
+                </div>
+                <div class="multiselect-select-all">
+                  <label class="multiselect-option select-all-option" (click)="$event.stopPropagation()">
+                    <input 
+                      type="checkbox" 
+                      [checked]="areAllServicesSelected()"
+                      [indeterminate]="areSomeServicesSelected()"
+                      (change)="toggleAllServices($event)"
+                    />
+                    <span class="option-text">
+                      <strong>{{areAllServicesSelected() ? 'Deselect All' : 'Select All'}}</strong>
+                      <span class="selection-count">({{selectedServices.length}}/{{serviceOptions.length}})</span>
+                    </span>
+                  </label>
+                </div>
+                <div class="multiselect-option-list">
+                  @for (service of filteredServiceOptions; track service) {
+                    <label class="multiselect-option" (click)="$event.stopPropagation()">
+                      <input 
+                        type="checkbox" 
+                        [value]="service" 
+                        [checked]="selectedServices.includes(service)"
+                        (change)="onServiceCheckboxChange($event)"
+                      />
+                      <span class="option-text">{{service | titlecase}}</span>
+                    </label>
+                  }
+                </div>
+                <div class="multiselect-footer" *ngIf="selectedServices.length > 0">
+                  <button class="filter-section-reset" (click)="resetServiceFilter(); $event.stopPropagation(); $event.preventDefault()">Reset Services</button>
+                </div>
+              </div>
             </div>
           </div>
           
-         
           <div class="filter-section">
-            <label class="filter-label">Organization</label>
-            <div class="checkbox-group">
-              @for (org of organizationOptions; track org) {
-                <label class="checkbox-item">
-                  <input type="checkbox" [value]="org" (change)="onOrganizationFilterChange($event)" [checked]="selectedOrganizations.includes(org)">
-                  <span>{{org}}</span>
-                </label>
-              }
+            <div class="filter-label-container">
+              <label class="filter-label">Organization</label>
+              <button class="filter-section-reset" *ngIf="selectedOrganizations.length > 0" (click)="resetOrganizationFilter(); $event.stopPropagation(); $event.preventDefault()">Reset</button>
+            </div>
+            <div class="filter-select-container organization-multiselect">
+              <div class="multiselect-dropdown" [class.open]="organizationDropdownOpen" (click)="toggleOrganizationDropdown()">
+                <div class="multiselect-display">
+                  <span *ngIf="selectedOrganizations.length === 0" class="placeholder">Select Organization</span>
+                  <span *ngIf="selectedOrganizations.length > 0" class="selected-count">{{selectedOrganizations.length}} selected</span>
+                </div>
+                <div class="multiselect-arrow">
+                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none">
+                    <path d="M1 1.5L6 6.5L11 1.5" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div class="multiselect-options" *ngIf="organizationDropdownOpen">
+                <div class="multiselect-search">
+                  <input 
+                    type="text" 
+                    placeholder="Search organizations..." 
+                    [(ngModel)]="organizationSearchText"
+                    (input)="filterOrganizations()"
+                    class="multiselect-search-input"
+                    (click)="$event.stopPropagation()"
+                  />
+                </div>
+                <div class="multiselect-select-all">
+                  <label class="multiselect-option select-all-option" (click)="$event.stopPropagation()">
+                    <input 
+                      type="checkbox" 
+                      [checked]="areAllOrganizationsSelected()"
+                      [indeterminate]="areSomeOrganizationsSelected()"
+                      (change)="toggleAllOrganizations($event)"
+                    />
+                    <span class="option-text">
+                      <strong>{{areAllOrganizationsSelected() ? 'Deselect All' : 'Select All'}}</strong>
+                      <span class="selection-count">({{selectedOrganizations.length}}/{{organizationOptions.length}})</span>
+                    </span>
+                  </label>
+                </div>
+                <div class="multiselect-option-list">
+                  @for (org of filteredOrganizationOptions; track org) {
+                    <label class="multiselect-option" (click)="$event.stopPropagation()">
+                      <input 
+                        type="checkbox" 
+                        [value]="org" 
+                        [checked]="selectedOrganizations.includes(org)"
+                        (change)="onOrganizationCheckboxChange($event)"
+                      />
+                      <span class="option-text">{{org | titlecase}}</span>
+                    </label>
+                  }
+                </div>
+                <div class="multiselect-footer" *ngIf="selectedOrganizations.length > 0">
+                  <button class="filter-section-reset" (click)="resetOrganizationFilter(); $event.stopPropagation(); $event.preventDefault()">Reset Organizations</button>
+                </div>
+              </div>
             </div>
           </div>
           
           <div class="filter-actions">
-            <button class="reset-btn" (click)="resetFilters()">Reset</button>
-            <button class="apply-btn" (click)="applyFilters()">Apply</button>
+            <button class="filter-reset-btn" (click)="resetFilters()">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zM8 2.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11z" fill="#666"/>
+                <path d="M10.5 5.5L8 8m0 0L5.5 10.5M8 8l2.5 2.5M8 8L5.5 5.5" stroke="#666" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+              Reset
+            </button>
+            <button class="filter-apply-btn" (click)="applyFilters()">Apply</button>
           </div>
         </div>
       </div>
+      
+      <div class="calendar-button-container">
+        <button class="action-button" >
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#666666">
+            <path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-80h80v80h320v-80h80v80h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Z"/>
+          </svg>
+        </button>
+      </div>
+      
       <div class="search-bar">
         <img src="assets/magnifying-glass.png" alt="search icon" class="search-bar-icon">
         <input 
@@ -69,6 +190,9 @@
           [(ngModel)]="searchText"
           (input)="onSearchChange()"
         />
+        <div class="search-bar-clear" (click)="clearSearch()" *ngIf="searchText">
+          <svg xmlns="http://www.w3.org/2000/svg" height="30px" viewBox="0 -960 960 960" width="24px" fill="#000000"><path d="m336-280-56-56 144-144-144-143 56-56 144 144 143-144 56 56-144 143 144 144-56 56-143-144-144 144Z"/></svg>
+        </div>
       </div>
       <div>
           <p *ngIf="searchText!=='' || (selectedServices.length>0 || selectedOrganizations.length>0) " class="filter-count"> {{ visibleCount() }} of {{ totalCount() }} helpers</p>
