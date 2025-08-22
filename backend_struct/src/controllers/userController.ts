@@ -1,6 +1,7 @@
 import {Request,Response} from 'express';
 import userService from '../services/userService'; 
-import { catchAsync } from '../middleware/errorHandler';
+import { sendApiResponse } from '../middleware/errorHandler';
+import { send } from 'process';
 
 interface MulterRequest extends Request {
   files: {
@@ -9,42 +10,76 @@ interface MulterRequest extends Request {
 }
 
 class UserController{
-     getAllUsers=catchAsync(async (req:Request,res:Response)=>{
-            const users=await userService.getAllUsers();
-            res.json(users);
-    });
+    getAllUsers = async (req:Request, res:Response)=>{
+      try {
+        const users=await userService.getAllUsers();
+        sendApiResponse(res, 200, 'Success', users);
+      } 
+      catch (error: any) {
+        sendApiResponse(res, 500, error.message, null);
+      }
+    };
 
-    createUser=catchAsync(async (req: Request, res: Response): Promise<void> => {
-           const files = (req as MulterRequest).files;
-           const fileData = {
-               profile: files?.profile?.[0],
-               kyc: files?.kyc?.[0],
-               document: files?.document?.[0]
-           };
-           const newUser = await userService.createUser(req.body, fileData);
-           res.status(201).json(newUser);
+    createUser=async (req: Request, res: Response) => {
+      try {
+          const files = (req as MulterRequest).files;
+          if(!files) {
+          sendApiResponse(res, 400, 'No files uploaded. Uploading files is required.');
+          return;
+         }
+        const fileData = {
+            profile: files?.profile?.[0],
+            kyc: files?.kyc?.[0],
+            document: files?.document?.[0]
+        };
+        const newUser = await userService.createUser(req.body, fileData);
+        sendApiResponse(res, 201, 'User created successfully', newUser);
+      } catch (error: any) {
+        sendApiResponse(res, 500, error.message, null);
+      }
 
-    });
+    };
 
-   updateUser=catchAsync(async (req: Request, res: Response): Promise<void> => {
-       const { id } = req.params;
-       const files = (req as MulterRequest).files;
-           const fileData = {
-               profile: files?.profile?.[0],
-               kyc: files?.kyc?.[0],
-               document: files?.document?.[0]
-           };
-           const updatedUser = await userService.updateUser(id, req.body, fileData);
-           res.json(updatedUser);
-       
-   });
+   updateUser=async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+         if(!id){
+          sendApiResponse(res, 400, 'User ID is required');
+          return;
+         }
+        const files = (req as MulterRequest).files;
+          if(!files) {
+          sendApiResponse(res, 400, 'No files uploaded. Uploading files is required.');
+          return;
+         }
+        const fileData = {
+        profile: files?.profile?.[0],
+        kyc: files?.kyc?.[0],
+        document: files?.document?.[0]
+        };
+        const updatedUser = await userService.updateUser(id, req.body, fileData);
+        sendApiResponse(res, 200, 'User updated successfully', updatedUser);
+    }
+    catch (error: any) {
+        sendApiResponse(res, 500, error.message, null);
+    }
+   };
 
-   deleteUser=catchAsync(async (req: Request, res: Response): Promise<void> => {
-       const { id } = req.params;
-              const deletedUser = await userService.deleteUser(id);
-              res.json({ message: 'User deleted successfully', user: deletedUser });
-         
-   });
+   deleteUser=async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      if(!id){
+        sendApiResponse(res, 400, 'User ID is required');
+        return;
+      }
+      const deletedUser = await userService.deleteUser(id);
+      sendApiResponse(res, 200, 'User deleted successfully', deletedUser);
+
+    }
+    catch{
+      sendApiResponse(res, 500, 'Internal Server Error', null);
+    }
+   };
 
 
 }

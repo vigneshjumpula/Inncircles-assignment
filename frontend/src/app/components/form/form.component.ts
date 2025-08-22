@@ -8,6 +8,7 @@ import { HelperDetailsService } from '../../services/helper-details.service';
 import { profile } from 'console';
 import {Helper} from '../../models/helper.interface';
 import { KycUploadDialogComponent, KycUploadResult } from './kyc-upload-dialog.component';
+import { getServiceTypes, getOrganizationNames, getGenders, getVehicleTypes } from '../../enums/user.enums';
 @Component({
   selector: 'app-form',
   standalone: true,
@@ -22,6 +23,13 @@ export class FormComponent{
     isLanguagesDropdownOpen = false;
     selectedLanguages: string[] = [];
     availableLanguages: string[] = ['english', 'telugu', 'hindi'];
+    
+    
+    serviceTypes = getServiceTypes();
+    organizationNames = getOrganizationNames();
+    genders = getGenders();
+    vehicleTypes = getVehicleTypes();
+    
     selectedKycFile: File | null = null;
     selectedKycDocumentType: string = '';
     selectedProfileFile: File | null = null;
@@ -41,7 +49,7 @@ export class FormComponent{
            type_of_service: ['', Validators.required],
            organization_name: ['', Validators.required],
            full_name: ['', [Validators.required, Validators.minLength(2)]],
-           languages: ['', Validators.required],
+           languages: [[], Validators.required],
            gender: ['', Validators.required],
            phone_number: ['', [Validators.required, Validators.pattern('^[6-9][0-9]{9}$')]],
            email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')]],
@@ -90,12 +98,11 @@ export class FormComponent{
         });
 
         if (helperDetails.languages) {
-            if (typeof helperDetails.languages === 'string') {
-                this.selectedLanguages = helperDetails.languages.split(',').map((lang: string) => lang.trim());
-            } else if (Array.isArray(helperDetails.languages)) {
+             if (Array.isArray(helperDetails.languages)) {
                 this.selectedLanguages = [...helperDetails.languages];
             }
-            this.userForm.get('languages')?.setValue(this.selectedLanguages.join(', '));
+            this.selectedLanguages = helperDetails.languages;
+            this.userForm.get('languages')?.setValue(this.selectedLanguages);
         }
 
         if (helperDetails.profile && helperDetails.profile !== '') {
@@ -167,7 +174,6 @@ export class FormComponent{
                 } else if (currentHelper?.profile) {
                     this.userForm.patchValue({ profile: currentHelper.profile });
                 }
-
                 if (this.selectedKycFile && this.selectedKycFile.size > 0) {
                     this.userForm.patchValue({ kyc: this.selectedKycFile });
                 } else if (currentHelper?.kyc) {
@@ -187,7 +193,13 @@ export class FormComponent{
                 }
             }
 
-            this.helperDetailsService.setHelperDetails(this.userForm.value);
+            // Prepare form data with properly formatted languages array
+            const formData = {
+                ...this.userForm.value,
+                languages: [...this.selectedLanguages] // Ensure languages is a proper array
+            };
+            
+            this.helperDetailsService.setHelperDetails(formData);
             
             // Mark form step as completed
             this.helperDetailsService.markStepCompleted('form', true);
@@ -242,8 +254,6 @@ export class FormComponent{
   
     hasError(fieldName: string): boolean {
         const field = this.userForm.get(fieldName);
-        
-        // Special handling for phone_number - only show errors after user leaves the field
         if (fieldName === 'phone_number') {
             return !!(field && field.invalid && (field.touched || this.formSubmitted));
         }
@@ -307,7 +317,7 @@ export class FormComponent{
         
        
         this.userForm.patchValue({
-            languages: this.selectedLanguages.join(', ')
+            languages: [...this.selectedLanguages]
         });
     }
 
@@ -340,7 +350,7 @@ export class FormComponent{
         
         // Update form control
         this.userForm.patchValue({
-            languages: this.selectedLanguages.join(', ')
+            languages: [...this.selectedLanguages]
         });
     }
 

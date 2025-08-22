@@ -141,9 +141,6 @@ export class ReviewComponent implements OnInit {
     
     getLanguagesDisplay(): string {
       if (!this.formDetails?.languages) return '-';
-      if (typeof this.formDetails.languages === 'string') {
-        return this.formDetails.languages.split(',').join(', ');
-      }
       return Array.isArray(this.formDetails.languages) ? 
         this.formDetails.languages.join(', ') : 
         this.formDetails.languages;

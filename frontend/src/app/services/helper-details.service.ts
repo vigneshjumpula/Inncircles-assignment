@@ -1,8 +1,15 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, map } from 'rxjs/operators';
 import { Helper } from '../models/helper.interface';
+
+// API Response interface to match backend response structure
+interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -33,10 +40,11 @@ export class HelperDetailsService {
       error: err => console.error('Failed to load initial helpers:', err)
     });
   }
-
+  
   loadHelpers(): Observable<Helper[]> {
-    return this.http.get<Helper[]>('http://localhost:3000/api/helpers')
+    return this.http.get<ApiResponse<Helper[]>>('http://localhost:3000/api/helpers')
       .pipe(
+        map(response => response.data), // Extract the data array from the API response
         tap(data => {  
           this.filter.set(data);
           this.helpers.set(data);
@@ -84,7 +92,7 @@ export class HelperDetailsService {
     if (!isEdit) {
       this.perDetails = null;
       this.editingHelperId = null;
-      // Reset step completion when exiting edit mode
+
       this.resetStepCompletion();
     }
   }
@@ -117,14 +125,25 @@ export class HelperDetailsService {
     }
     
     const formData = new FormData();
-    const languages = typeof this.perDetails.languages === 'string' 
-      ? this.perDetails.languages.split(',').map((lang: string) => lang.trim())
-      : this.perDetails.languages;
+    
+    
+    let languages: string[] = [];
+    if (this.perDetails.languages) {
+      if (Array.isArray(this.perDetails.languages)) {
+        languages = this.perDetails.languages;
+      } else {
+        languages = String(this.perDetails.languages).split(',').map((lang: string) => lang.trim());
+      }
+    }
 
     formData.append('type_of_service', this.perDetails.type_of_service);
     formData.append('organization_name', this.perDetails.organization_name);
     formData.append('full_name', this.perDetails.full_name);
-    formData.append('languages', JSON.stringify(languages)); 
+    
+    languages.forEach(language => {
+      formData.append('languages[]', language);
+    });
+    
     formData.append('gender', this.perDetails.gender);
     formData.append('phone_number', String(this.perDetails.phone_number));
     formData.append('email', this.perDetails.email);
@@ -166,15 +185,26 @@ export class HelperDetailsService {
     
     const formData = new FormData();
     
-  
-    const languages = typeof this.perDetails.languages === 'string' 
-      ? this.perDetails.languages.split(',').map((lang: string) => lang.trim())
-      : this.perDetails.languages;
+    // Process languages properly - ensure it's always an array
+    let languages: string[] = [];
+    if (this.perDetails.languages) {
+      if (Array.isArray(this.perDetails.languages)) {
+        languages = this.perDetails.languages;
+      } else {
+        // Handle the case where it might be stored as a string (for backwards compatibility)
+        languages = String(this.perDetails.languages).split(',').map((lang: string) => lang.trim());
+      }
+    }
 
     formData.append('type_of_service', this.perDetails.type_of_service);
     formData.append('organization_name', this.perDetails.organization_name);
     formData.append('full_name', this.perDetails.full_name);
-    formData.append('languages', JSON.stringify(languages));
+    
+    // Append each language separately to create an array on the backend
+    languages.forEach(language => {
+      formData.append('languages[]', language);
+    });
+    
     formData.append('gender', this.perDetails.gender);
     formData.append('phone_number', String(this.perDetails.phone_number));
     formData.append('email', this.perDetails.email);

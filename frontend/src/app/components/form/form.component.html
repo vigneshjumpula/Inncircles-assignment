@@ -35,9 +35,9 @@
             <label for="service">Type of Service: <span class="required">*</span></label>
             <select formControlName="type_of_service" id="service">
                 <option value="">Select a service</option>
-                <option value="cleaning">Cleaning</option>
-                <option value="cooking">Cooking</option>
-                <option value="babysitting">Babysitting</option>
+                <option *ngFor="let service of serviceTypes" [value]="service">
+                    {{ service | titlecase }}
+                </option>
             </select>
             <div *ngIf="hasError('type_of_service')" class="error-message">
                 {{ getErrorMessage('type_of_service') }}
@@ -49,9 +49,9 @@
             <label for="organization_name">Organization Name: <span class="required">*</span></label>
             <select formControlName="organization_name" id="organization_name">
                 <option value="">Select an organization</option>
-                <option value="organization1">Organization 1</option>
-                <option value="organization2">Organization 2</option>
-                <option value="organization3">Organization 3</option> 
+                <option *ngFor="let org of organizationNames" [value]="org">
+                    {{ org | titlecase }}
+                </option>
             </select>
             <div *ngIf="hasError('organization_name')" class="error-message">
                 {{ getErrorMessage('organization_name') }}
@@ -107,9 +107,9 @@
             <label for="gender">Gender: <span class="required">*</span></label>
             <select formControlName="gender" id="gender">
                 <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option *ngFor="let gender of genders" [value]="gender">
+                    {{ gender | titlecase }}
+                </option>
             </select>
             <div *ngIf="hasError('gender')" class="error-message">
                 {{ getErrorMessage('gender') }}
@@ -141,9 +141,9 @@
             <label for="vehicle">Choose Vehicle: <span class="required">*</span></label>
             <select formControlName="choose_vehicle" id="vehicle">
                 <option value="">Select a vehicle</option>
-                <option value="car">Car</option>
-                <option value="bike">Bike</option>
-                <option value="bus">Bus</option>
+                <option *ngFor="let vehicle of vehicleTypes" [value]="vehicle">
+                    {{ vehicle | titlecase }}
+                </option>
             </select>
             <div *ngIf="hasError('choose_vehicle')" class="error-message">
                 {{ getErrorMessage('choose_vehicle') }}

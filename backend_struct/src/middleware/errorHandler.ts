@@ -1,13 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 
 
-export const catchAsync = (fn: Function) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        fn(req, res, next).catch(next);
-    };
-};
-
-
 export const errorHandler = (error: any, req: Request, res: Response, next: NextFunction) => {
     console.log('Error:', error.message);
     
@@ -30,5 +23,13 @@ export const errorHandler = (error: any, req: Request, res: Response, next: Next
     res.status(statusCode).json({
         success: false,
         message: message
+    });
+};
+
+export const sendApiResponse = (res: Response, statusCode: number, message: string, data?: any) => {
+    res.status(statusCode).json({
+        success: statusCode < 400,
+        message: message,
+        data: data,
     });
 };

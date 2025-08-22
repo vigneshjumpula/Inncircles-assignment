@@ -105,16 +105,34 @@ export class RightComponent implements OnInit {
   }
 
   
-  getLanguagesDisplay(): string {
-    if (!this.helper?.languages) return '-';
-    if (typeof this.helper.languages === 'string') {
-      return this.helper.languages.split(',').map((lang: string) => lang.trim()).join(', ');
-    }
-   
-    return Array.isArray(this.helper.languages) ? 
-      this.helper.languages.join(', ') : 
-      this.helper.languages;
+    
+  // In the component class
+getLanguagesDisplay(): string {
+  if (!this.helper || !this.helper.languages || this.helper.languages.length === 0) {
+    return '';
   }
+  
+  const languages = this.helper.languages;
+  
+  // Handle the case where languages might still be stored as ["["english","telugu","hindi"]"] (old format)
+  if (languages.length === 1 && languages[0].startsWith('[') && languages[0].endsWith(']')) {
+    try {
+      const parsedLanguages = JSON.parse(languages[0]);
+      return Array.isArray(parsedLanguages) ? parsedLanguages.join(', ') : languages[0];
+    } catch (error) {
+      // If parsing fails, treat it as a regular string
+      return languages[0];
+    }
+  }
+  
+  // If it's already a proper array of strings (new format)
+  return languages.join(', ');
+}
+   
+  //   return Array.isArray(this.helper.languages) ? 
+  //     this.helper.languages.join(', ') : 
+  //     this.helper.languages;
+  // }
 
   openKycDocument() {
     if (this.helper && this.helper._id) {
