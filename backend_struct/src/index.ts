@@ -4,6 +4,7 @@ import cors from 'cors';
 import {connectDB} from './config/db';
 import userRoutes from './routes/userRoutes';
 import path from 'path';
+import {errorHandler} from './middleware/errorHandler';
 
 dotenv.config();
 connectDB();
@@ -12,9 +13,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-
 app.use('/api/helpers', userRoutes);
+app.use(errorHandler);
 
 
 const PORT = process.env.PORT || 3000;
