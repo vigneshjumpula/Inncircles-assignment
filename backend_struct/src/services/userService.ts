@@ -36,6 +36,27 @@ class UserService{
     }
 
     async deleteUser(userId: string) {
+        console.log("hii");
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+        const fs = require('fs');
+        const path = require('path');
+        const uploadsDir = path.join(__dirname, '../uploads');
+        const filesToDelete = [user.profile, user.kyc, user.document];
+        //console.log("Files to delete:", filesToDelete);
+        filesToDelete.forEach((file) => {
+            if (file) {
+                const filePath = path.join(uploadsDir, file);
+                console.log("Checking file:", filePath);
+                console.log(fs.existsSync(filePath));
+                if (fs.existsSync(filePath)) {
+                    console.log("deleting the file:", filePath);
+                    fs.unlinkSync(filePath);
+                }
+            }
+        });
         const deletedUser = await User.findByIdAndDelete(userId);
         return deletedUser;
     }
